@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.AttendanceMapper">
+    <resultMap id="attendanceResultMap" type="attendance">
+        <result property="staffId" column="staff_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_attendance where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectByPageAndCondition" resultMap="attendanceResultMap">
+        select tb_attendance.*,tb_staff.name as staffName,tb_department.name as departmentName from tb_attendance
+        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id = tb_department.id
+        <where>
+            <if test="attendance.date != null and attendance.date != ''">
+                and date = #{attendance.date}
+            </if>
+            <if test="attendance.status != null">
+                and tb_attendance.status = #{attendance.status}
+            </if>
+            <if test="attendance.staffName != null and attendance.staffName != ''">
+                and tb_staff.name like #{attendance.staffName}
+            </if>
+            <if test="attendance.departmentId != null">
+                and tb_staff.department_id = #{attendance.departmentId}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_attendance
+        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id = tb_department.id
+        <where>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="status != null">
+                and tb_attendance.status = #{status}
+            </if>
+            <if test="staffName != null">
+                and tb_staff.name like #{staffName}
+            </if>
+            <if test="departmentId != null">
+                and tb_staff.department_id = #{departmentId}
+            </if>
+        </where>
+    </select>
+</mapper>

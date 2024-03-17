@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.StaffMapper">
+    <resultMap id="staffResultMap" type="staff">
+        <result property="departmentId" column="department_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_staff where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectByPageAndCondition" resultMap="staffResultMap">
+        select tb_staff.*,tb_user.username as username,tb_department.name as departmentName from tb_staff
+        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        <where>
+            <if test="staff.name != null and staff.name != ''">
+                and tb_staff.name like #{staff.name}
+            </if>
+            <if test="staff.gender != null">
+                and gender = #{staff.gender}
+            </if>
+            <if test="staff.level != null">
+                and level = #{staff.level}
+            </if>
+            <if test="staff.status != null">
+                and status = #{staff.status}
+            </if>
+            <if test="staff.username != null and staff.username != ''">
+                and tb_user.username like #{staff.username}
+            </if>
+            <if test="staff.departmentId != null">
+                and department_id = #{staff.departmentId}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_staff
+        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        <where>
+            <if test="name != null and name != ''">
+                and tb_staff.name like #{name}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="username != null and username != ''">
+                and tb_user.username like #{username}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人力资源管理系统</title>
+    <style>
+        html, body, #app {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #ffffff;
+
+
+            .el-main {
+                flex: 1;
+                color: #000000;
+                text-align: center;
+                line-height: 160px;
+            }
+        }
+
+
+        .el-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .el-header {
+            display: flex;
+            justify-content: space-between;
+            background-color: #9bc3f8;
+            color: #000000;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #ffffff;
+            color: #000000;
+            text-align: center;
+            line-height: 200px;
+        }
+
+
+        .el-menu {
+            background-color: #becbda;
+        }
+
+        .avatar-info {
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+            margin-right: 10px;
+            margin-left: 550px;
+            cursor: pointer;
+        }
+
+        .username {
+            margin-left: 0;
+        }
+
+    </style>
+
+</head>
+<body>
+<script src="../../js/vue.js"></script>
+<script src="../../element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="../../element-ui/lib/theme-chalk/index.css">
+
+<script src="../../js/axios-0.18.0.js"></script>
+
+<div id="app">
+    <el-container>
+        <el-dialog
+                title="修改密码"
+                :visible.sync="changePasswordDialogVisible"
+                width="30%">
+            <el-form :rules="formRules" ref="updatePassword" :model="updatePassword" label-width="80px" status-icon>
+                <el-form-item label="原密码" prop="password" class="passwordItem">
+                    <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="newPassword">
+                    <el-input  type="password" v-model="updatePassword.newPassword"placeholder="请输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword" >
+                    <el-input type="password" v-model="updatePassword.confirmPassword" placeholder="请再次输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('updatePassword')">确认</el-button>
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-header>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h1 style="margin-top: 0; color: #202434; font-size: 30px;">人力资源管理系统</h1>
+                </div>
+
+                <div>
+                    <el-dropdown @command="handleCommand">
+                        <!-- 用户头像与用户名部分 -->
+                        <div class="demo-basic--circle">
+                            <div class="block">
+                                <div class="avatar-info">
+                                    <el-avatar :size="40" :src="avatar" :class="['avatar-info']"
+                                               icon="el-icon-user-solid"></el-avatar>
+                                    <span class="username">{{username}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <el-dropdown-menu slot="dropdown" height="auto" style="margin-top: 0px; margin-right: -30px;">
+                            <el-dropdown-item><i class="el-icon-info" ></i>个人资料</el-dropdown-item>
+                            <el-dropdown-item command="showDialog"><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
+                            <el-dropdown-item command="logout"><i class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+
+            </div>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+<!--                @click="goToSalaryManager"-->
+                <el-menu default-active="1" :default-openeds="['2', '3']" background-color="#ffffff">
+                    <el-menu-item index="1" @click="goToHome"><i class="el-icon-s-home"></i>主页</el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title"><i class="el-icon-s-help"></i>人事管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1" @click="goToAnnouncementManager">公告管理</el-menu-item>
+                            <el-menu-item index="2-2" @click="goToSalaryManager">薪资管理</el-menu-item>
+                            <el-menu-item index="2-3" @click="goToAttendanceManager">考勤管理</el-menu-item>
+                            <el-menu-item index="2-4" @click="goToApplicationManager">审批管理</el-menu-item>
+                            <el-menu-item index="2-5" @click="goToTrainingManager">培训管理</el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title"><i class="el-icon-user-solid"></i>用户管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="3-1" @click="goToUserManager">用户信息</el-menu-item>
+                            <el-menu-item index="3-2" @click="goToStaffManager">员工信息</el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="4" @click="goToDepartmentManager"><i class="el-icon-menu"></i>部门管理</el-menu-item>
+                </el-menu>
+            </el-aside>
+
+            <el-main>
+                <div class="box">
+                    <h1>管理员</h1>{{username}}<h1>欢迎使用员工管理系统!</h1>
+                </div>
+
+            </el-main>
+        </el-container>
+
+    </el-container>
+</div>
+<script>
+    new Vue({
+        el: "#app",
+        data() {
+            let checkPassword = (rule, value, callback) => {
+                if( !value ){
+                    callback(new Error('请输入确认密码'));
+                }
+                if (value !== this.updatePassword.newPassword) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            }
+            return {
+
+                updatePassword:{
+                    id:'',
+                    password: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                },
+                changePasswordDialogVisible:false,
+                formRules: {
+                    password: [
+                        { required: true, message: '请输入原密码', trigger: 'blur' },
+                    ],
+                    newPassword: [
+                        { required: true, message: '请输入新密码', trigger: 'blur' },
+                    ],
+                    confirmPassword: [
+                        { required: true, validator: checkPassword , trigger: 'blur' }
+                    ],
+                },
+                username: '7777',
+                avatar: ''
+            }
+        },
+        mounted(){
+            this.getUsername();
+            this.getUserId();
+        },
+
+        methods: {
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 全部校验合法走这里
+
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            getUserId(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUserId')
+                    .then(response => {
+                        this.updatePassword.id = response.data;
+                    })
+            },
+            handleCommand(func){
+                eval('this.' + func + '()')
+            },
+            showDialog(){
+                this.changePasswordDialogVisible = true;
+            },
+            changePassword(){
+
+            },
+            logout() {
+                console.log('退出')
+                this.$confirm('您确定要退出登录吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var _this = this;
+                    axios({
+                        method: "get",
+                        url: "http://localhost:8080/EmployeeManagementSystem2/user/logout",
+                    }).then(function (response) {
+                        if (response.data === "success") {
+                            _this.$message({
+                                message: '成功退出',
+                                type: 'success'
+                            });
+                            setTimeout(() => {
+                                    window.location.href = "http://localhost:8080/EmployeeManagementSystem2/login.html";
+                            }, 400);
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消退出'
+                    });
+                });
+            },
+            getUsername(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
+                    .then(response => {
+                        this.username = response.data;
+                    })
+            },
+            goToHome(){
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/adminHome.html"
+            },
+            goToAnnouncementManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/announcementManager.html"
+            },
+            goToDepartmentManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/departmentManager.html"
+            },
+            goToSalaryManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/salaryManager.html"
+            },
+            goToStaffManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/staffManager.html"
+            },
+            goToUserManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/userManager.html"
+            },
+            goToAttendanceManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/attendanceManager.html"
+            },
+            goToApplicationManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/applicationManager.html"
+            },
+            goToTrainingManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
+            }
+        }
+    })
+</script>
+</body>
+</html>

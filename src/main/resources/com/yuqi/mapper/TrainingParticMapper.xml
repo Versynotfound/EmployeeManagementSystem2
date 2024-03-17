@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.TrainingParticMapper">
+    <resultMap id="trainingParticResultMap" type="trainingParticipation">
+        <result property="staffId" column="staff_id"/>
+        <result property="trainingId" column="training_id"/>
+    </resultMap>
+    <select id="selectByStaffId" resultMap="trainingParticResultMap">
+        select t.name as trainingName,t.start_time as startTime,t.end_time as endTime,tp.score from tb_training_participation tp
+        left join tb_staff s on tp.staff_id = s.id
+        left join tb_training t on tp.training_id = t.id
+        where tp.id = #{id}
+        limit #{begin},#{size}
+    </select>
+
+    <select id="selectTotalCountByStaffId" resultType="java.lang.Integer">
+        select count(*) from tb_training_participation tp
+        left join tb_staff s on tp.staff_id = s.id
+        left join tb_training t on tp.training_id = t.id
+        where tp.id = #{id}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.DepartmentMapper">
+    <resultMap id="departmentResultMap" type="department">
+        <result property="managerId" column="manager_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_department where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!-- 使用like，完成模糊查询-->
+    <select id="selectByPageAndCondition" resultMap="departmentResultMap">
+        select tb_department.*,tb_staff.name as managerName from tb_department
+        left join tb_staff on tb_department.manager_id = tb_staff.id
+        <where>
+            <if test="department.name != null and department.name != ''">
+                and tb_department.name like #{department.name}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+    <!-- 由于只有一个参数，没有加Param注解，可以不直接使用实体类里的成员变量 -->
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_department
+        <where>
+            <if test="name != null and name != ''">
+                and name like #{name}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.TrainingMapper">
+    <resultMap id="trainingResultMap" type="training">
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="adminId" column="admin_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_training where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByPageAndCondition" resultMap="trainingResultMap">
+        select tb_training.*,tb_user.username as adminName from tb_training
+        left join tb_user on tb_training.admin_id = tb_user.id
+        <where>
+            <if test="training.name != null and training.name != ''">
+                and name like #{training.name}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_training
+        left join tb_user on tb_training.admin_id = tb_user.id
+        <where>
+            <if test="name != null and name != ''">
+                and name like #{name}
+            </if>
+        </where>
+    </select>
+
+</mapper>

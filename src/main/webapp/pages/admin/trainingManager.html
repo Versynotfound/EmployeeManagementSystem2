@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人力资源管理系统</title>
+    <style>
+        html, body, #app {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #ffffff;
+
+
+            .el-main {
+                flex: 1;
+                color: #000000;
+                text-align: center;
+                line-height: 160px;
+            }
+        }
+
+
+        .el-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .el-header {
+            display: flex;
+            justify-content: space-between;
+            background-color: #9bc3f8;
+            color: #000000;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #ffffff;
+            color: #000000;
+            text-align: center;
+            line-height: 200px;
+        }
+
+
+        .el-menu {
+            background-color: #becbda;
+        }
+
+        .avatar-info {
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+            margin-right: 10px;
+            margin-left: 550px;
+            cursor: pointer;
+        }
+
+        .username {
+            margin-left: 0;
+        }
+
+    </style>
+
+</head>
+<body>
+<script src="../../js/vue.js"></script>
+<script src="../../element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="../../element-ui/lib/theme-chalk/index.css">
+
+<script src="../../js/axios-0.18.0.js"></script>
+
+<div id="app">
+    <el-container>
+        <el-dialog
+                title="发起培训"
+                :visible.sync="dialogVisible"
+                width="30%">
+            <el-form ref="form" :model="training" label-width="80px">
+                <el-form-item label="培训名称">
+                    <el-input v-model="training.name"></el-input>
+                </el-form-item>
+                <el-form-item label="培训描述">
+                    <el-input type="textarea" v-model="training.description"></el-input>
+                </el-form-item>
+                <el-form-item label="活动时间" prop="activityTime">
+                    <el-date-picker
+                            v-model="timeRange"
+                            type="daterange"
+                            value-format="yyyy-MM-dd"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="addTraining">确定</el-button>
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        
+        <el-dialog
+                title="修改培训信息"
+                :visible.sync="updateDialogVisible"
+                width="30%">
+            <el-form ref="form" :model="updateData" label-width="80px">
+                <el-form-item label="培训名称">
+                    <el-input v-model="updateData.name"></el-input>
+                </el-form-item>
+                <el-form-item label="培训描述">
+                    <el-input type="textarea" v-model="updateData.description"></el-input>
+                </el-form-item>
+                <el-form-item label="活动时间" prop="activityTime">
+                    <el-date-picker
+                            v-model="timeRange"
+                            type="daterange"
+                            value-format="yyyy-MM-dd"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="updateTraining">修改</el-button>
+                    <el-button @click="updateDialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-header>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h1 style="margin-top: 0; color: #202434; font-size: 30px;">人力资源管理系统</h1>
+                </div>
+
+                <div>
+                    <el-dropdown @command="handleCommand">
+                        <!-- 用户头像与用户名部分 -->
+                        <div class="demo-basic--circle">
+                            <div class="block">
+                                <div class="avatar-info">
+                                    <el-avatar :size="40" :src="avatar" :class="['avatar-info']" icon="el-icon-user-solid"></el-avatar>
+                                    <span class="username">{{username}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <el-dropdown-menu slot="dropdown" height="auto" style="margin-top: 0px; margin-right: -30px;">
+                            <el-dropdown-item><i class="el-icon-info" @click=""></i>个人资料</el-dropdown-item>
+                            <el-dropdown-item><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
+                            <el-dropdown-item command="logout"><i class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown></div>
+
+            </div>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu default-active="2-5" :default-openeds="['2', '3']" background-color="#ffffff">
+                    <el-menu-item index="1" @click="goToHome"><i class="el-icon-s-home"></i>主页</el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title"><i class="el-icon-s-help"></i>人事管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1" @click="goToAnnouncementManager">公告管理</el-menu-item>
+                            <el-menu-item index="2-2" @click="goToTrainingManager">薪资管理</el-menu-item>
+                            <el-menu-item index="2-3" @click="goToAttendanceManager">考勤管理</el-menu-item>
+                            <el-menu-item index="2-4" @click="goToApplicationManager">审批管理</el-menu-item>
+                            <el-menu-item index="2-5" @click="goToTrainingManager">培训管理</el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title"><i class="el-icon-user-solid"></i>用户管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="3-1" @click="goToUserManager">用户信息</el-menu-item>
+                            <el-menu-item index="3-2" @click="goToStaffManager">员工信息</el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="4" @click="goToDepartmentManager"><i class="el-icon-menu"></i>部门管理</el-menu-item>
+                </el-menu>
+            </el-aside>
+
+            <el-main>
+                <div class="box">
+                    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+                        <el-form-item label="培训名称">
+                            <el-input v-model="searchForm.name" placeholder="请输入培训名称"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="onSubmit">查询</el-button>
+                            <el-button type="warning" @click="resetForm" plain>重置</el-button>
+                        </el-form-item>
+                    </el-form>
+
+                    <el-row style="margin-top: 20px">
+                        <el-button type="danger" @click="deleteByIds" plain>批量删除</el-button>
+                        <el-button type="primary" @click="dialogVisible = true" plain>发起培训</el-button>
+                    </el-row>
+
+                    <el-table
+                            v-loading="loading"
+                            :data="tableData"
+                            stripe style="width: 100%"
+                            :row-style="{height: '60px'}"
+                            :cell-style="{padding: '0'}"
+                            @selection-change="handleSelectionChange">
+                        <el-table-column
+                                type="selection"
+                                width="55">
+                        </el-table-column>
+                        <el-table-column
+                                label="序号"
+                                type="index"
+                                width="50">
+                        </el-table-column>
+                        <el-table-column
+                                prop="name"
+                                label="培训名称"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                prop="description"
+                                label="培训描述"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                prop="startTime"
+                                label="开始时间"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                prop="endTime"
+                                label="结束时间"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                prop="adminName"
+                                label="发起人"
+                                align="center">
+                        </el-table-column>
+                        <el-table-column
+                                align="center"
+                                label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini"  @click="updateTrainingStart(scope.row)" plain>修改</el-button>
+                                <el-button type="danger" size="mini" @click="deleteTraining(scope.row)" plain>删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page="currentPage"
+                            :page-sizes="[5,10,15,20]"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalCount">
+                    </el-pagination>
+                </div>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+<script>
+    new Vue({
+        el: "#app",
+        data() {
+            return {
+                timeRange:[],
+                tableData:[
+                    {
+                        name:'',
+                        description:'',
+                        startTime:'',
+                        endTime:'',
+                        staffName:'',
+                    }
+                ],
+                training:{
+                    name:'',
+                    description:'',
+                    startTime:'',
+                    endTime:'',
+                    adminId:''
+                },
+                // 计算属性监听startTime和endTime的变化
+                computed:{
+                    activityTime:{
+                        get () {
+                            return[this.training.startTime,this.training.endTime];
+                        },
+                        set(value){
+                            this.training.startTime = value[0];
+                            this.training.endTime = value[1];
+                        }
+                    }
+                },
+                // 被选中的id数组
+                selectedIds:[],
+                // 复选框选中的记录
+                multipleSelection: [],
+                // 添加数据的对话框是否展示的标记
+                dialogVisible: false,
+                // 修改数据的对话框是否展示的标记
+                updateDialogVisible: false,
+                // 默认总记录数为100
+                totalCount : 100,
+                // 默认当前页为1
+                currentPage: 1,
+                // 默认展示5条
+                pageSize: 5,
+                // 查询表单模型
+                searchForm: {
+                    name:''
+                },
+                // 修改表单模型数据
+                updateData: {
+                    name:'',
+                    description:'',
+                    startTime:'',
+                    endTime:''
+                },
+                // 删除数据的模型：
+                deleteData:{
+                    id:'',
+                },
+                loading: true,
+                username:'7777',
+                avatar:''
+
+            }
+        },
+        // 页面加载完成后，发送异步请求，查询数据
+        mounted(){
+            this.selectAll();
+            this.getUserId();
+            this.getUsername();
+        },
+
+        methods: {
+            handleCommand(func){
+                eval('this.' + func + '()')
+            },
+            logout() {
+                console.log('退出')
+                this.$confirm('您确定要退出登录吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var _this = this;
+                    axios({
+                        method: "get",
+                        url: "http://localhost:8080/EmployeeManagementSystem2/user/logout",
+                    }).then(function (response) {
+                        if (response.data === "success") {
+                            _this.$message({
+                                message: '成功退出',
+                                type: 'success'
+                            });
+                            setTimeout(() => {
+                                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/login.html";
+                            }, 400);
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消退出'
+                    });
+                });
+            },
+            getUserId(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUserId')
+                    .then(response => {
+                        this.training.adminId = response.data;
+                    })
+            },
+            getUsername(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
+                    .then(response => {
+                        this.username = response.data;
+                    })
+            },
+            selectAll(){
+                var _this = this;
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/training/selectByPageAndCondition?currentPage="+this.currentPage+"&pageSize="+this.pageSize,
+                    data:this.searchForm
+                }).then(function (response){
+                    _this.tableData = response.data.rows;
+                    _this.totalCount = response.data.totalCount;
+                    _this.loading = false;
+                })
+            },
+            // 新增
+            addTraining(){
+                var _this = this;
+                this.training.startTime = this.timeRange[0];
+                this.training.endTime = this.timeRange[1];
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/training/add",
+                    data: this.training
+                }).then(function (response){
+                    _this.selectAll();
+                    if (response.data === "success") {
+                        _this.dialogVisible = false;
+                        _this.selectAll();
+                        _this.$message({
+                            message: '添加成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            },
+            // 删除数据
+            deleteTraining(row) {
+                this.deleteData = row;
+                var _this = this;
+                this.$confirm('您确定要删除该数据？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios({
+                        method: "post",
+                        url: "http://localhost:8080/EmployeeManagementSystem2/training/deleteById",
+                        data: _this.deleteData
+                    }).then(function (response){
+                        if (response.data === "success") {
+                            _this.selectAll();
+                            _this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                        }
+                    })
+                })
+            },
+            // 批量删除
+            deleteByIds(){
+                this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    for (let i = 0; i < this.multipleSelection.length; i++) {
+                        let selectedElement = this.multipleSelection[i];
+                        this.selectedIds[i] = selectedElement.id;
+                    }
+                    var _this = this;
+                    axios({
+                        method: "post",
+                        url: "http://localhost:8080/EmployeeManagementSystem2/training/deleteByIds",
+                        data: _this.selectedIds
+                    }).then(function (response){
+                        if (response.data === "success") {
+                            _this.selectAll();
+                            _this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            updateTrainingStart(row){
+                this.updateData = JSON.parse(JSON.stringify(row));
+                this.updateData.startTime = row.startTime;
+                this.updateData.endTime = row.endTime;
+                this.updateDialogVisible = true;
+            },
+            // 修改
+            updateTraining(row) {
+                var _this = this;
+                this.updateData.startTime = this.timeRange[0];
+                this.updateData.endTime = this.timeRange[1];
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/training/updateTraining",
+                    data: this.updateData
+                }).then(function (response) {
+                    if (response.data === "success") {
+                        _this.updateDialogVisible = false;
+                        _this.selectAll();
+                        _this.$message({
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            },
+            // 复选框选中数据后执行的方法
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleSizeChange(val) {
+                // 重新设置每页显示的条数
+                this.pageSize = val;
+                this.selectAll();
+            },
+            handleCurrentChange(val) {
+                // 重新设置当前页码
+                this.currentPage = val;
+                this.selectAll();
+            },
+            // 发送表单数据查询。
+            onSubmit() {
+                this.selectAll();
+            },
+            // 表单重置
+            resetForm() {
+                this.searchForm = { name: ''};
+            },
+            goToHome(){
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/adminHome.html"
+            },
+            goToAnnouncementManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/announcementManager.html"
+            },
+            goToDepartmentManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/departmentManager.html"
+            },
+            goToSalaryManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/salaryManager.html"
+            },
+            goToStaffManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/staffManager.html"
+            },
+            goToUserManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/userManager.html"
+            },
+            goToAttendanceManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/attendanceManager.html"
+            },
+            goToApplicationManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/applicationManager.html"
+            },
+            goToTrainingManager(){
+                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
+            }
+        }
+    })
+</script>
+</body>
+</html>

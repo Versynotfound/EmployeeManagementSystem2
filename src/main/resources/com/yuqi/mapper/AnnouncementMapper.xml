@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.AnnouncementMapper">
+    <resultMap id="announcementResultMap" type="announcement">
+        <result property="createdTime" column="created_time"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_announcement where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByPageAndCondition" resultMap="announcementResultMap">
+        select tb_announcement.*,tb_user.username as username from tb_announcement
+        left join tb_user on tb_announcement.user_id = tb_user.id
+        <where>
+            <if test="announcement.title != null and announcement.title != ''">
+                and title like #{announcement.title}
+            </if>
+        </where>
+        order by id desc limit #{begin},#{size}
+    </select>
+
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_announcement
+        <where>
+            <if test="title != null and title != ''">
+                and title like #{title}
+            </if>
+        </where>
+    </select>
+</mapper>

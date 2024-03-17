@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.SalaryMapper">
+    <resultMap id="salaryResultMap" type="salary">
+        <result property="basicSalary" column="basic_salary"/>
+        <result property="fullAttendanceBonus" column="full_attendance_bonus"/>
+        <result property="performanceBonus" column="performance_bonus"/>
+        <result property="staffId" column="staff_id"/>
+        <result property="departmentId" column="department_id"/>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete from tb_salary where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByPageAndCondition" resultMap="salaryResultMap">
+        select tb_salary.*,tb_staff.name as staffName,tb_department.name as departmentName from tb_salary
+        left join tb_staff on tb_salary.staff_id = tb_staff.id left join tb_department on tb_salary.department_id = tb_department.id
+        <where>
+            <if test="salary.staffId != null">
+                and staff_id = #{salary.staffId}
+            </if>
+            <if test="salary.month != null and salary.month != ''">
+                and month = #{salary.month}
+            </if>
+            <if test="salary.departmentId != null">
+                and tb_salary.department_id = #{salary.departmentId}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_salary
+        left join tb_staff on tb_salary.staff_id = tb_staff.id left join tb_department on tb_salary.department_id = tb_department.id
+        <where>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="month != null and month != ''">
+                and month = #{month}
+            </if>
+            <if test="departmentId != null">
+                and tb_salary.department_id = #{departmentId}
+            </if>
+        </where>
+    </select>
+</mapper>

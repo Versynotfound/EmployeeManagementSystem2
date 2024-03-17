@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqi.mapper.ApplicationMapper">
+    <resultMap id="applicationResultMap" type="application">
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="staffId" column="staff_id"/>
+        <result property="adminId" column="admin_id"/>
+    </resultMap>
+    <select id="selectByPageAndCondition" resultMap="applicationResultMap">
+        select tb_application.*,tb_staff.name as staffName,tb_user.username as adminName from tb_application
+        left join tb_staff on tb_application.staff_id = tb_staff.id
+        left join tb_user on tb_application.admin_id = tb_user.id
+        <where>
+            <if test="application.staffId != null">
+                and staff_id = #{application.staffId}
+            </if>
+            <if test="application.type != null">
+                and type = #{application.type}
+            </if>
+            <if test="application.status != null">
+                and tb_application.status = #{application.status}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+    <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
+        select count(*) from tb_application
+        left join tb_staff on tb_application.staff_id = tb_staff.id
+        left join tb_user on tb_application.admin_id = tb_user.id
+        <where>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="status != null">
+                and tb_application.status = #{status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

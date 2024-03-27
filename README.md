@@ -50,8 +50,6 @@ xml文件不能用--注释(虽然这样写会自动变灰)
 
 有ResultMap时记得删除自动创建时出现的ResultType
 
-<welcome-file>指定的页面必须在webapp下才能正常渲染
-
 JS导入文件路径要正确才能正常渲染。移动文件位置直接复制代码会导致路径错误
 
 ！尝试做数据回显失败 只能显示0 1等的数字值，虽然我觉得我写得很有道理
@@ -70,16 +68,14 @@ public Str getxxxStr之前不要瞎定义成员变量！
 
 问题：员工处selectAll时一直获取不到userId。原因：请求是异步的，走getUserId时还没获取到结果，就已经走selectAll了。解决方法：挂载完成后在this.getUserId()里执行this.selectAll
 
+问题：登录时如果username为中文会显示为问号。解决方法：在servlet写数据之前加一句`response.setContentType("text/plain;charset=utf-8");`
 
+问题：trainingPartic前端传回来的id为空值。解决方法：好蠢啊你用的post方式传过来数据却用get的方式接收...
 
 尝试使用vue项目，但教程多是使用框架，前后端联调失败，遂放弃 不使用vue路由而是location.href进行页面跳转
 
 ## ToDo
 
-删除管理员的个人信息栏
-
-完成所有需要的动态遍历
-
 过滤器检查admin权限。返回login.html时做警告
 
-员工进行头像上传。以及根据员工id select各种信息
+员工进行头像上传，个人信息修改。以及根据员工id select各种信息

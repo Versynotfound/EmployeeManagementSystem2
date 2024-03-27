@@ -40,6 +40,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updatePassword(int id,String password){
+        SqlSession sqlSession = factory.openSession();
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        mapper.updatePassword(id,password);
+        sqlSession.commit();
+        sqlSession.close();
+    }
+
+    @Override
     public void deleteByIds(int[] ids) {
         SqlSession sqlSession = factory.openSession();
         UserMapper mapper = sqlSession.getMapper(UserMapper.class);

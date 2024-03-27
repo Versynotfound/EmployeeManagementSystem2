@@ -51,4 +51,15 @@ public interface StaffService {
      */
     List<Staff> selectHeaders();
 
+    /**
+     * 查询所有员工
+     * @return 员工集合
+     */
+    List<Staff> selectStaffs();
+
+    /**
+     * 根据用户id查询员工信息
+     * @return 员工
+     */
+    Staff selectByUserId(int id);
 }

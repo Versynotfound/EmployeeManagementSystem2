@@ -1,6 +1,7 @@
 package com.yuqi.mapper;
 
 import com.yuqi.pojo.Department;
+import com.yuqi.pojo.Staff;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -77,5 +78,13 @@ public interface DepartmentMapper {
      */
     @Delete("delete from tb_department where id = #{id}")
     void deleteById(int id);
+
+    
+    /**
+     * 查询所有部门
+     * @return 部门集合
+     */
+    @Select("select * from tb_department")
+    List<Department> selectDepartments();
 
 }

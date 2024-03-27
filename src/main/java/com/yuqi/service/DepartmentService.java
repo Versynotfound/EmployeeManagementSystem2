@@ -2,6 +2,7 @@ package com.yuqi.service;
 
 import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
+import com.yuqi.pojo.Staff;
 
 import java.util.List;
 
@@ -59,4 +60,10 @@ public interface DepartmentService {
      */
     PageBean<Department> selectByPageAndCondition(int currentPage, int pageSize, Department department);
 
+
+    /**
+     * 查询所有部门
+     * @return 部门集合
+     */
+    List<Department> selectDepartments();
 }

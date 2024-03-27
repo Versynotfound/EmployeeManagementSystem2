@@ -34,7 +34,6 @@ public class  StaffServlet extends BaseServlet {
     public void updateStaff(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BufferedReader br = request.getReader();
         String params = br.readLine();
-
         Staff staff = JSON.parseObject(params, Staff.class);
         staffService.updateStaff(staff);
 
@@ -85,6 +84,25 @@ public class  StaffServlet extends BaseServlet {
         response.setContentType("text/json;charset=utf-8");
         response.getWriter().write(jsonString);
     }
-    
-    
+
+    public void selectStaffs(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Staff> staffs = staffService.selectStaffs();
+        String jsonString = JSON.toJSONString(staffs);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(jsonString);
+    }
+
+    public void selectByUserId(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader br = request.getReader();
+        String params = br.readLine();
+        int id = JSON.parseObject(params, int.class);
+        Staff staff = staffService.selectByUserId(id);
+        String jsonString = JSON.toJSONString(staff);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(jsonString);
+
+    }
+
+
+
 }

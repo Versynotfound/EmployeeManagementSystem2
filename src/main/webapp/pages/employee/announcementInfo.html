@@ -78,6 +78,27 @@
 
 <div id="app">
     <el-container>
+        <el-dialog
+                title="修改密码"
+                :visible.sync="changePasswordDialogVisible"
+                width="30%">
+            <el-form ref="form" :rules="formRules" :model="updatePassword" label-width="80px">
+                <el-form-item label="原密码">
+                    <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码">
+                    <el-input  type="password" v-model="updatePassword.confirmPassword" placeholder="请输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码">
+                    <el-input type="password" v-model="updatePassword.confirmPassword" placeholder="请再次输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="changePassword">确认</el-button>
+                    <el-button @click="changePassworDialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
         <el-header>
             <div style="display: flex; justify-content: space-between;">
                 <div>
@@ -85,7 +106,7 @@
                 </div>
 
                 <div>
-                    <el-dropdown>
+                    <el-dropdown @command="handleCommand">
                         <!-- 用户头像与用户名部分 -->
                         <div class="demo-basic--circle">
                             <div class="block">
@@ -98,20 +119,18 @@
                         </div>
                         <el-dropdown-menu slot="dropdown" height="auto" style="margin-top: 0px; margin-right: -30px;">
                             <el-dropdown-item><i class="el-icon-info" @click=""></i>个人资料</el-dropdown-item>
-                            <el-dropdown-item><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
-                            <el-dropdown-item @click="logout"><i class="el-icon-switch-button"></i>退出登录
-                            </el-dropdown-item>
+                            <el-dropdown-item @click="showDialog"><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
+                            <el-dropdown-item @click="logout"><i class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
-
             </div>
         </el-header>
         <el-container>
             <el-aside width="200px">
-                <el-menu default-active="6-2" :default-openeds="['2', '3']" background-color="#ffffff">
-                    <el-menu-item index="1"><i class="el-icon-s-home"></i>主页</el-menu-item>
-                    <el-menu-item index="2" @click="goToAnnouncementInfo">公告板</el-menu-item>
+                <el-menu default-active="2" :default-openeds="['2', '3']" background-color="#ffffff">
+                    <el-menu-item index="1" @click="goToHome"><i class="el-icon-s-home"></i>主页</el-menu-item>
+                    <el-menu-item index="2">公告板</el-menu-item>
                     <el-menu-item index="3">薪资信息</el-menu-item>
                     <el-menu-item index="4">考勤信息</el-menu-item>
                     <el-menu-item index="5">我的申请</el-menu-item>
@@ -133,50 +152,42 @@
                             stripe style="width: 100%"
                             :row-style="{height: '60px'}"
                             :cell-style="{padding: '0'}"
-                            @selection-change="handleSelectionChange">
+                            @selection-change="handleSelectionChange"
+                    >
                         <el-table-column
                                 label="序号"
                                 type="index"
+                                prop="index"
                                 width="50">
                         </el-table-column>
                         <el-table-column
-                                prop="name"
-                                label="培训名称"
+                                prop="title"
+                                label="标题"
                                 align="center">
                         </el-table-column>
                         <el-table-column
-                                prop="description"
-                                label="培训描述"
+                                prop="content"
+                                label="内容"
                                 align="center">
                         </el-table-column>
                         <el-table-column
-                                prop="startTime"
-                                label="开始时间"
+                                prop="createdTime"
+                                label="发布时间"
                                 align="center">
                         </el-table-column>
                         <el-table-column
-                                prop="endTime"
-                                label="结束时间"
+                                prop="lastUpdateTime"
+                                label="修改时间"
                                 align="center">
                         </el-table-column>
                         <el-table-column
-                                prop="adminName"
-                                label="发起人"
+                                prop="username"
+                                label="发布者"
                                 align="center">
                         </el-table-column>
-                        <el-table-column
-                                prop="score"
-                                label="成绩"
-                                align="center">
-                        </el-table-column>
-                        <el-table-column
-                                align="center"
-                                label="操作">
-                            <template slot-scope="scope">
-                                <el-button type="primary" size="mini" @click="add(scope.row)" plain>参与</el-button>
-                            </template>
-                        </el-table-column>
+
                     </el-table>
+
 
                     <el-pagination
                             @size-change="handleSizeChange"
@@ -199,77 +210,65 @@
         el: "#app",
         data() {
             return {
-                loading:true,
-                tableData:[
+                // 表格数据
+                tableData: [
                     {
-                        name:'',
-                        description:'',
-                        startTime:'',
-                        endTime:'',
-                        staffName:'',
+
                     }
                 ],
-                username: '',
-                avatar: '',
-                trainingPartic: {
-                    userId: '',
-                    trainingId: ''
+                searchForm: {
+                    title: ''
                 },
                 // 默认总记录数为100
-                totalCount : 100,
+                totalCount: 100,
                 // 默认当前页为1
                 currentPage: 1,
                 // 默认展示5条
                 pageSize: 5,
+                updatePassword: {
+                    password: '',
+                    confirmPassword: ''
+                },
+                loading: true,
+                username: '',
+                avatar: '',
+                changePasswordDialogVisible:false
             }
         },
-        mounted() {
+        mounted(){
             this.getUsername();
-            this.getUserId();
+            this.selectAll();
         },
 
         methods: {
-            getUserId() {
-                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUserId')
-                    .then(response => {
-                        this.trainingPartic.userId = response.data;
-                        this.selectAll()
-                    })
-            },
-            selectAll(){
+            selectAll() {
                 var _this = this;
+                console.log(this.searchForm)
                 axios({
                     method: "post",
-                    url: "http://localhost:8080/EmployeeManagementSystem2/trainingPartic/selectByStaffId?currentPage="+this.currentPage+"&pageSize="+this.pageSize,
-                    data:{id:this.trainingPartic.userId}
-                }).then(function (response){
+                    url: "http://localhost:8080/EmployeeManagementSystem2/announcement/selectByPageAndCondition?currentPage=" + this.currentPage + "&pageSize=" + this.pageSize,
+                    data: this.searchForm
+                }).then(function (response) {
                     _this.tableData = response.data.rows;
                     _this.totalCount = response.data.totalCount;
                     _this.loading = false;
                 })
             },
-            add(row) {
-                var _this = this;
-                // 获取培训ID
-                axios.get('http://localhost:8080/EmployeeManagementSystem2/training/getTrainingIdByName', {
-                    params: {name: row.name}
-                }).then(function (response) {
-                        _this.trainingPartic.trainingId = response.data;
-                    axios({
-                        method: "post",
-                        url: "http://localhost:8080/EmployeeManagementSystem2/trainingPartic/add",
-                        data: this.trainingPartic
-                    }).then(function (response) {
-                        _this.selectAll();
-                        if (response.data === "success") {
-                            _this.selectAll();
-                            _this.$message({
-                                message: '参与成功',
-                                type: 'success'
-                            });
-                        }
-                    })
-                })
+            handleSizeChange(val) {
+                // 重新设置每页显示的条数
+                this.pageSize = val;
+                this.selectAll();
+            },
+            handleCurrentChange(val) {
+                // 重新设置当前页码
+                this.currentPage = val;
+                this.selectAll();
+            },
+            showDialog(){
+                this.changePasswordDialogVisible = true;
+            },
+            handleCommand(func){
+                eval('this.' + func + '()')
             },
             logout() {
                 this.$confirm('您确定要退出登录吗?', '提示', {
@@ -299,27 +298,14 @@
                     });
                 });
             },
-            getUsername() {
+            getUsername(){
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
                     .then(response => {
                         this.username = response.data;
                     })
             },
-            handleSizeChange(val) {
-                // 重新设置每页显示的条数
-                this.pageSize = val;
-                this.selectAll();
-            },
-            handleCurrentChange(val) {
-                // 重新设置当前页码
-                this.currentPage = val;
-                this.selectAll();
-            },
-            goToHome() {
-                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/employee/adminHome.html"
-            },
-            goToAnnouncementInfo(){
-                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/employee/announcementInfo.html"
+            goToHome(){
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/employee/employeeHome.html"
             },
             goToTrainingParticManager(){
                 window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/employee/trainingParticManager.html"

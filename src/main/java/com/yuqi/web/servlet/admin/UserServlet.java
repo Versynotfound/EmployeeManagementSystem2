@@ -17,6 +17,7 @@ import java.io.IOException;
 
 /**
  * 用户servlet
+ *
  * @author yuqi
  */
 @WebServlet("/user/*")
@@ -36,6 +37,16 @@ public class UserServlet extends BaseServlet {
         String params = br.readLine();
         User user = JSON.parseObject(params, User.class);
         userService.updateUser(user);
+        response.getWriter().write("success");
+    }
+
+    public void updatePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader br = request.getReader();
+        String params = br.readLine();
+        User user = JSON.parseObject(params, User.class);
+        int id = user.getId();
+        String password = user.getPassword();
+        userService.updatePassword(id, password);
         response.getWriter().write("success");
     }
 
@@ -77,7 +88,18 @@ public class UserServlet extends BaseServlet {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             String username = user.getUsername();
+            response.setContentType("text/plain;charset=utf-8");
             response.getWriter().write(username);
+        }
+    }
+
+    public void getPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            String password = user.getPassword();
+            response.setContentType("text/plain;charset=utf-8");
+            response.getWriter().write(password);
         }
     }
 

@@ -62,5 +62,10 @@
             </if>
         </where>
     </select>
+    <select id="selectByUserId" resultMap="staffResultMap">
+        select tb_staff.*,tb_user.username as username,tb_department.name as departmentName from tb_staff
+        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        where user_id = #{id}
+    </select>
 
 </mapper>

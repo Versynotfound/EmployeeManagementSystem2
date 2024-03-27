@@ -1,10 +1,7 @@
 package com.yuqi.web.servlet.staff;
 
 import com.alibaba.fastjson.JSON;
-import com.yuqi.pojo.Application;
-import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Training;
-import com.yuqi.pojo.TrainingParticipation;
+import com.yuqi.pojo.*;
 import com.yuqi.service.TrainingParticService;
 import com.yuqi.service.TrainingService;
 import com.yuqi.service.impl.TrainingParticServiceImpl;
@@ -39,11 +36,12 @@ public class TrainingParticServlet extends BaseServlet {
         int currentPage = Integer.parseInt(currentPageStr);
         int pageSize = Integer.parseInt(pageSizeStr);
 
-        String userIdStr = request.getParameter("id");
-        System.out.println("userId:"+userIdStr);
-        int userId = Integer.parseInt(userIdStr);
+        BufferedReader br = request.getReader();
+        String params = br.readLine();
+        int id = JSON.parseObject(params, int.class);
+        System.out.println(params);
 
-        PageBean<TrainingParticipation> pageBean = trainingParticService.selectByStaffId(currentPage, pageSize, userId);
+        PageBean<TrainingParticipation> pageBean = trainingParticService.selectByStaffId(currentPage, pageSize, id);
 
         String jsonString = JSON.toJSONString(pageBean);
         response.setContentType("text/json;charset=utf-8");

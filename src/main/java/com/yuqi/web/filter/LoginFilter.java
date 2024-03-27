@@ -38,6 +38,9 @@ public class LoginFilter implements Filter {
             req.getRequestDispatcher("/login.html").forward(request,response);
         }
 
+        // 这里接着继续写用户权限验证。
+        // 我的设想是通过地址栏获取当前的开头是/admin还是/employee，如果是无权限直接跳转到unauthorized.html
+        // 可能会用到httpRequest.getRequestURI().startsWith("/admin")？不知道。
     }
     @Override
     public void init(FilterConfig config) throws ServletException {

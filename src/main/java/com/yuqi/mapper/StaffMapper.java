@@ -61,4 +61,18 @@ public interface StaffMapper {
     @Select("select * from tb_staff where level = 1")
     List<Staff> selectHeaders();
 
+    /**
+     * 查询所有员工
+     * @return 员工集合
+     */
+    @Select("select * from tb_staff")
+    List<Staff> selectStaffs();
+
+    /**
+     * 根据用户id查询员工
+     * @param id 用户id
+     * @return 员工
+     */
+    Staff selectByUserId(int id);
+
 }

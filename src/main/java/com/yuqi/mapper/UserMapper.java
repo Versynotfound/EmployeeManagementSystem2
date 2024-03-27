@@ -28,6 +28,14 @@ public interface UserMapper {
     void update(User user);
 
     /**
+     * 修改密码
+     * @param id 用户id
+     * @param password 修改后密码
+     */
+    @Update("update tb_user set password=#{password} where id = #{id}")
+    void updatePassword(@Param("id")int id,@Param("password")String password);
+
+    /**
      * 批量删除
      * @param ids id数组
      */

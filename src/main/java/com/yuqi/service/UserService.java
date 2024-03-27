@@ -22,6 +22,13 @@ public interface UserService {
     void updateUser(User user);
 
     /**
+     * 修改密码
+     * @param id 用户id
+     * @param password 修改后密码
+     */
+    void updatePassword(int id,String password);
+
+    /**
      * 批量删除
      * @param ids 数组
      */
@@ -49,7 +56,4 @@ public interface UserService {
      * @return 用户
      */
     User login(String username, String password);
-
-
-
 }

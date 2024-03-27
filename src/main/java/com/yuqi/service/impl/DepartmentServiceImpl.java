@@ -1,8 +1,10 @@
 package com.yuqi.service.impl;
 
 import com.yuqi.mapper.DepartmentMapper;
+import com.yuqi.mapper.StaffMapper;
 import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
+import com.yuqi.pojo.Staff;
 import com.yuqi.service.DepartmentService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -97,5 +99,15 @@ public class DepartmentServiceImpl implements DepartmentService {
         pageBean.setTotalCount(totalCount);
         sqlSession.close();
         return pageBean;
+    }
+
+    @Override
+    public List<Department> selectDepartments(){
+        SqlSession sqlSession = factory.openSession();
+        DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+        List<Department> rows = mapper.selectDepartments();
+        sqlSession.commit();
+        sqlSession.close();
+        return rows;
     }
 }

@@ -3,6 +3,7 @@ package com.yuqi.web.servlet.admin;
 import com.alibaba.fastjson.JSON;
 import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
+import com.yuqi.pojo.Staff;
 import com.yuqi.service.DepartmentService;
 import com.yuqi.service.impl.DepartmentServiceImpl;
 import com.yuqi.web.servlet.BaseServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 部门Servlet
@@ -104,4 +106,12 @@ public class DepartmentServlet extends BaseServlet {
         response.setContentType("text/json;charset=utf-8");
         response.getWriter().write(jsonString);
     }
+    
+    public void selectDepartments(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Department> departments = departmentService.selectDepartments();
+        String jsonString = JSON.toJSONString(departments);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(jsonString);
+    }
+
 }

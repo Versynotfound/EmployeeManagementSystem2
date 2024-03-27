@@ -106,4 +106,24 @@ public class StaffServiceImpl implements StaffService {
         sqlSession.close();
         return rows;
     }
+
+    @Override
+    public List<Staff> selectStaffs() {
+        SqlSession sqlSession = factory.openSession();
+        StaffMapper mapper = sqlSession.getMapper(StaffMapper.class);
+        List<Staff> rows = mapper.selectStaffs();
+        sqlSession.commit();
+        sqlSession.close();
+        return rows;
+    }
+
+    @Override
+    public Staff selectByUserId(int id){
+        SqlSession sqlSession = factory.openSession();
+        StaffMapper mapper = sqlSession.getMapper(StaffMapper.class);
+        Staff rows = mapper.selectByUserId(id);
+        sqlSession.commit();
+        sqlSession.close();
+        return rows;
+    }
 }

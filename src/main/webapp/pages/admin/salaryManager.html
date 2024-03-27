@@ -87,7 +87,7 @@
                 <!--下拉框-->
                 <el-form-item label="员工姓名">
                     <el-select v-model="salary.staffId" placeholder="请选择员工">
-                        <el-option label="发赌博" value="12"></el-option>
+                        <el-option v-for="item in staffData" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发放年月">
@@ -125,7 +125,7 @@
             <el-form ref="form" :model="updateData" label-width="80px">
                 <el-form-item label="员工姓名">
                     <el-select v-model="updateData.staffId" placeholder="请选择员工">
-                        <el-option label="发赌博" value="11"></el-option>
+                        <el-option v-for="item in staffData" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发放年月">
@@ -155,6 +155,27 @@
             </el-form>
         </el-dialog>
 
+        <el-dialog
+                title="修改密码"
+                :visible.sync="changePasswordDialogVisible"
+                width="30%">
+            <el-form :rules="formRules" ref="updatePassword" :model="updatePassword" label-width="80px" status-icon>
+                <el-form-item label="原密码" prop="password" class="passwordItem">
+                    <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="newPassword">
+                    <el-input  type="password" v-model="updatePassword.newPassword"placeholder="请输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword" >
+                    <el-input type="password" v-model="updatePassword.confirmPassword" placeholder="请再次输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('updatePassword')">确认</el-button>
+                    <el-button @click="changePasswordDialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
         <el-header>
             <div style="display: flex; justify-content: space-between;">
                 <div>
@@ -173,8 +194,7 @@
                             </div>
                         </div>
                         <el-dropdown-menu slot="dropdown" height="auto" style="margin-top: 0px; margin-right: -30px;">
-                            <el-dropdown-item><i class="el-icon-info" @click=""></i>个人资料</el-dropdown-item>
-                            <el-dropdown-item><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
+                            <el-dropdown-item command="showDialog"><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
                             <el-dropdown-item command="logout"><i class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown></div>
@@ -211,7 +231,7 @@
                     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
                         <el-form-item label="员工">
                             <el-select v-model="searchForm.staffId" placeholder="请选择员工" clearable>
-                                <el-option label="发赌博" value="11"></el-option>
+                                <el-option v-for="item in staffData" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="发放年月">
@@ -224,9 +244,7 @@
                         </el-form-item>
                         <el-form-item label="部门">
                             <el-select v-model="searchForm.departmentId" placeholder="请选择部门" clearable>
-                                <el-option label="技术部" value="1"></el-option>
-                                <el-option label="销售部" value="2"></el-option>
-                                <el-option label="运维部" value="3"></el-option>
+                                <el-option v-for="item in departmentData" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item>
@@ -324,20 +342,39 @@
     new Vue({
         el: "#app",
         data() {
+            let checkPassword = (rule, value, callback) => {
+                if( !value ){
+                    callback(new Error('请输入确认密码'));
+                }
+                if (value !== this.updatePassword.newPassword) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            }
             return {
+                updatePassword:{
+                    id:'',
+                    password: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                },
+                changePasswordDialogVisible:false,
+                formRules: {
+                    password: [
+                        { required: true, message: '请输入原密码', trigger: 'blur' },
+                    ],
+                    newPassword: [
+                        { required: true, message: '请输入新密码', trigger: 'blur' },
+                    ],
+                    confirmPassword: [
+                        { required: true, validator: checkPassword , trigger: 'blur' }
+                    ],
+                },
+                staffData:[],
+                departmentData:[],
                 // 表格数据
-                tableData:[
-                    {
-                        month:'',
-                        staffName:'',
-                        salaryName:'',
-                        basicSalary: '',
-                        fullAttendanceBonus:'',
-                        performanceBonus:'',
-                        totalSalary:'',
-                        remark:''
-                    }
-                ],
+                tableData:[],
                 // 新增的薪资模型数据
                 salary:{
                     staffId:'',
@@ -381,18 +418,99 @@
                     id:'',
                 },
                 loading: true,
-                username:'7777',
-                avatar:''
+                username:'',
+                avatar:'',
+                password:'',
 
             }
         },
         // 页面加载完成后，发送异步请求，查询数据
         mounted(){
             this.getUsername();
+            this.getPassword();
             this.selectAll();
+            this.getUserId();
+        },
+
+        created(){
+            this.loadStaffData();
+            this.loadDepartmentData();
         },
 
         methods: {
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        var _this = this;
+                        if (_this.updatePassword.password == _this.password){
+                            if (_this.updatePassword.password == _this.updatePassword.confirmPassword){
+                                _this.$message.error('新密码不能与原密码一致，请重试');
+                            }else{
+                                _this.updatePassword.password = _this.updatePassword.confirmPassword;
+                                axios({
+                                    method: "post",
+                                    url: "http://localhost:8080/EmployeeManagementSystem2/user/updatePassword",
+                                    data: _this.updatePassword
+                                }).then(function (response) {
+                                    if (response.data === "success") {
+                                        _this.updateDialogVisible = false;
+                                        _this.$message({
+                                            message: '修改成功，即将退出登录',
+                                            type: 'success'
+                                        });
+
+                                        axios({
+                                            method: "get",
+                                            url: "http://localhost:8080/EmployeeManagementSystem2/user/logout",
+                                        }).then(function (response) {
+                                            if (response.data === "success") {
+                                                setTimeout(() => {
+                                                    window.location.href = "http://localhost:8080/EmployeeManagementSystem2/login.html";
+                                                }, 400);
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        } else {
+                            _this.$message.error('密码错误，请重试');
+                        }
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            getUserId(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUserId')
+                    .then(response => {
+                        this.updatePassword.id = response.data;
+                    })
+            },
+            showDialog(){
+                this.changePasswordDialogVisible = true;
+            },
+            loadDepartmentData(){
+                var _this = this;
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/department/selectDepartments"
+                }).then(function (response){
+                    if(response.data.code === 200){
+                    }
+                    _this.departmentData = response.data;
+                })
+            },
+            loadStaffData(){
+                var _this = this;
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/staff/selectStaffs"
+                }).then(function (response){
+                    if(response.data.code === 200){
+                    }
+                    _this.staffData = response.data;
+                })
+            },
             handleCommand(func){
                 eval('this.' + func + '()')
             },
@@ -403,7 +521,6 @@
                     })
             },
             logout() {
-                console.log('退出')
                 this.$confirm('您确定要退出登录吗?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -562,6 +679,12 @@
             // 表单重置
             resetForm() {
                 this.searchForm = { name: ''};
+            },
+            getPassword(){
+                axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getPassword')
+                    .then(response => {
+                        this.password = response.data;
+                    })
             },
             goToHome(){
                 window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/adminHome.html"

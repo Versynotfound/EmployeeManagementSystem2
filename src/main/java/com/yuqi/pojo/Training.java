@@ -1,17 +1,16 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
+import com.yuqi.common.BasePage;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 /**
  * 培训类
  * @author yuqi
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Training {
+public class Training extends BasePage {
     /**
      * 主键
      */
@@ -38,4 +37,9 @@ public class Training {
     private Integer adminId;
 
     private String adminName;
+
+    /**
+     * 是否参与了活动,0未参与  1已参与
+     */
+    private Integer activeInvolved;
 }

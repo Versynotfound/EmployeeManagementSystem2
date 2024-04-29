@@ -29,11 +29,11 @@
   </li>
 </template>
 <script>
-  import Menu from './menu-mixin';
-  import ElTooltip from 'element-ui/packages/tooltip';
-  import Emitter from 'element-ui/src/mixins/emitter';
+import Menu from './menu-mixin';
+import ElTooltip from 'element-ui/packages/tooltip';
+import Emitter from 'element-ui/src/mixins/emitter';
 
-  export default {
+export default {
     name: 'ElMenuItem',
 
     componentName: 'ElMenuItem',

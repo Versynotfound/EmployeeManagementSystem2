@@ -1,7 +1,6 @@
 package com.yuqi.mapper;
 
 import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface StaffMapper {
      * 添加
      * @param staff 员工
      */
-    @Insert("insert into tb_staff values( null,#{staff.name},#{staff.gender},#{staff.level},#{staff.avatar},#{staff.phone},#{staff.status},#{staff.departmentId},#{staff.userId})")
+    @Insert("insert into tb_staff(name,gender,level,avatar,phone,status,department_id,user_id) values( #{staff.name},#{staff.gender},#{staff.level},#{staff.avatar},#{staff.phone},#{staff.status},#{staff.departmentId},#{staff.userId})")
     void add(@Param("staff") Staff staff);
 
     /**
@@ -37,7 +36,7 @@ public interface StaffMapper {
      */
     @Delete("delete from tb_staff where id = #{id}")
     void deleteById(int id);
-    
+
     /**
      * 根据条件分页查询
      * @param begin 当前页码
@@ -75,4 +74,17 @@ public interface StaffMapper {
      */
     Staff selectByUserId(int id);
 
+    /**
+     * 根据用户ID更新员工表信息
+     * @param staff
+     */
+    @Update("update tb_staff set name = #{name},gender = #{gender},level = #{level},phone = #{phone},status = #{status},department_id = #{departmentId},avatar = #{avatar},user_id = #{userId} where user_id = #{userId}")
+    void updateByUserId(Staff staff);
+
+    /**
+     * 根据用户ID修改用户状态
+     * @param staff
+     */
+    @Update("update tb_staff set status = #{status} where id = #{id}")
+    void updateUserStatusById(Staff staff);
 }

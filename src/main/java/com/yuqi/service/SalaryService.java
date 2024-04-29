@@ -1,10 +1,7 @@
 package com.yuqi.service;
 
-import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Salary;
-import com.yuqi.pojo.Staff;
-import org.apache.ibatis.annotations.Update;
 
 /**
  * SalaryMapper接口，提供操作薪资salary相关数据的方法集合

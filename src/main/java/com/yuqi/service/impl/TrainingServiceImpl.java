@@ -1,11 +1,8 @@
 package com.yuqi.service.impl;
 
-import com.yuqi.mapper.SalaryMapper;
 import com.yuqi.mapper.TrainingMapper;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Salary;
 import com.yuqi.pojo.Training;
-import com.yuqi.service.SalaryService;
 import com.yuqi.service.TrainingService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -83,5 +80,14 @@ public class TrainingServiceImpl implements TrainingService {
         int id = mapper.getTrainingIdByName(name);
         sqlSession.close();
         return id;
-    };
+    }
+
+    @Override
+    public int selectCountById(Integer id) {
+        SqlSession sqlSession = factory.openSession();
+        TrainingMapper mapper = sqlSession.getMapper(TrainingMapper.class);
+        return mapper.selectCountById(id);
+    }
+
+    ;
 }

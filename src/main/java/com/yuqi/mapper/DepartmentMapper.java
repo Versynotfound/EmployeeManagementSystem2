@@ -1,7 +1,6 @@
 package com.yuqi.mapper;
 
 import com.yuqi.pojo.Department;
-import com.yuqi.pojo.Staff;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

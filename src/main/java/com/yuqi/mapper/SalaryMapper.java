@@ -1,8 +1,6 @@
 package com.yuqi.mapper;
 
 import com.yuqi.pojo.Salary;
-import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.User;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;

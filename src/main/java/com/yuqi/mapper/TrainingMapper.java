@@ -59,4 +59,11 @@ public interface TrainingMapper {
      */
     int selectTotalCountByCondition(Training training);
 
+    /**
+     * 根据活动ID查询活动信息
+     * @param id
+     * @return
+     */
+    int selectCountById(@Param("id")Integer id);
+
 }

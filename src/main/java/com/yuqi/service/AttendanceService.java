@@ -2,7 +2,6 @@ package com.yuqi.service;
 
 import com.yuqi.pojo.Attendance;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Salary;
 
 /**
  * AttendanceMapper接口，提供操作考勤记录Attendance相关数据的方法集合

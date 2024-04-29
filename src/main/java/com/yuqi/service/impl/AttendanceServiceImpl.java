@@ -1,8 +1,6 @@
 package com.yuqi.service.impl;
 
-import com.yuqi.mapper.AnnouncementMapper;
 import com.yuqi.mapper.AttendanceMapper;
-import com.yuqi.pojo.Announcement;
 import com.yuqi.pojo.Attendance;
 import com.yuqi.pojo.PageBean;
 import com.yuqi.service.AttendanceService;

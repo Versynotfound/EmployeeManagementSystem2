@@ -2,8 +2,6 @@ package com.yuqi.service;
 
 import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.User;
 
 import java.util.List;
 
@@ -62,4 +60,10 @@ public interface StaffService {
      * @return 员工
      */
     Staff selectByUserId(int id);
+
+    /**
+     * 根据用户ID修改员工信息
+     * @param staff
+     */
+    void updateByUserId(Staff staff);
 }

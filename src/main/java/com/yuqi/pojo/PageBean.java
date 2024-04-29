@@ -1,8 +1,8 @@
 package com.yuqi.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.yuqi.common.BasePage;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -10,10 +10,9 @@ import java.util.List;
  * 分页查询的JavaBean
  * @author yuqi
  */
-@Getter
-@Setter
-@ToString
-public class PageBean<T> {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class PageBean<T> extends BasePage {
     /**
      * 总记录数
      */

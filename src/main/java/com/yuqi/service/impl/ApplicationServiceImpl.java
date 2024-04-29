@@ -1,11 +1,12 @@
 package com.yuqi.service.impl;
 
+import com.yuqi.enums.ApplyCationTypeEnum;
+import com.yuqi.enums.StaffStatusEnum;
 import com.yuqi.mapper.ApplicationMapper;
-import com.yuqi.mapper.ApplicationMapper;
+import com.yuqi.mapper.StaffMapper;
 import com.yuqi.pojo.Application;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Application;
-import com.yuqi.service.ApplicationService;
+import com.yuqi.pojo.Staff;
 import com.yuqi.service.ApplicationService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -32,10 +33,30 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void updateApplication(Application application) {
         SqlSession sqlSession = factory.openSession();
-        ApplicationMapper mapper = sqlSession.getMapper(ApplicationMapper.class);
-        mapper.update(application);
-        sqlSession.commit();
-        sqlSession.close();
+        try {
+            ApplicationMapper mapper = sqlSession.getMapper(ApplicationMapper.class);
+            mapper.update(application);
+            StaffMapper staffMapper = sqlSession.getMapper(StaffMapper.class);
+            Integer applyCationType = application.getType();
+            Integer userStatus = null;
+            if (ApplyCationTypeEnum.LEAVE.getCode() == applyCationType) {
+                userStatus = StaffStatusEnum.LEAVE.getCode();
+            }
+            if (ApplyCationTypeEnum.RESIGNATION.getCode() == applyCationType) {
+                userStatus = StaffStatusEnum.RESIGNATION.getCode();
+            }
+            if (null != userStatus) {
+                Staff staff = new Staff();
+                staff.setId(application.getStaffId());
+                staff.setStatus(userStatus);
+                staffMapper.updateUserStatusById(staff);
+            }
+            sqlSession.commit();
+        }catch (Exception e){
+            sqlSession.rollback();
+        }finally {
+            sqlSession.close();
+        }
     }
 
     @Override

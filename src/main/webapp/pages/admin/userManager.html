@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>人力资源管理系统</title>
     <style>
-        html, body, #app {
+        html,
+        body,
+        #app {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -65,10 +68,10 @@
         .username {
             margin-left: 0;
         }
-
     </style>
 
 </head>
+
 <body>
 <script src="../../js/vue.js"></script>
 <script src="../../element-ui/lib/index.js"></script>
@@ -79,13 +82,10 @@
 <div id="app">
     <el-container>
         <!--新增数据的弹框-->
-        <el-dialog
-                title="注册用户"
-                :visible.sync="dialogVisible"
-                width="30%">
+        <el-dialog title="注册用户" :visible.sync="dialogVisible" width="30%">
             <el-form ref="form" :model="user" label-width="80px">
                 <el-form-item label="用户名">
-                    <el-input v-model="user.username"></el-input>
+                    <el-input v-model="user.loginName"></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
                     <el-input v-model="user.password"></el-input>
@@ -96,6 +96,37 @@
                         <el-option label="管理员" value="1"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="员工名">
+                    <el-input v-model="user.name"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-select v-model="user.gender" placeholder="请选择性别">
+                        <el-option label="男" value="0"></el-option>
+                        <el-option label="女" value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="所属部门">
+                    <el-select v-model="user.departmentId" placeholder="请选择部门">
+                        <el-option v-for="item in departmentData" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="身份">
+                    <el-select v-model="user.level" placeholder="请选择身份">
+                        <el-option label="员工" value="0"></el-option>
+                        <el-option label="主管" value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="联系电话">
+                    <el-input v-model="user.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-select v-model="user.status" placeholder="请选择状态">
+                        <el-option label="在职" value="0"></el-option>
+                        <el-option label="离职" value="1"></el-option>
+                        <el-option label="休假" value="2"></el-option>
+                        <el-option label="请假" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="addUser">提交</el-button>
                     <el-button @click="dialogVisible = false">取消</el-button>
@@ -104,21 +135,18 @@
         </el-dialog>
 
         <!--修改数据的弹框-->
-        <el-dialog
-                title="修改用户信息"
-                :visible.sync="updateDialogVisible"
-                width="30%">
+        <el-dialog title="修改用户信息" :visible.sync="updateDialogVisible" width="30%">
             <el-form ref="form" :model="updateData" label-width="80px">
                 <el-form-item label="用户名">
-                    <el-input v-model="updateData.username"></el-input>
+                    <el-input v-model="updateData.loginName"></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
-                    <el-input type="textarea" v-model="updateData.password"></el-input>
+                    <el-input v-model="updateData.password"></el-input>
                 </el-form-item>
                 <el-form-item label="身份">
                     <el-select v-model="updateData.identity" placeholder="请选择身份">
-                        <el-option label="用户" value="0"></el-option>
-                        <el-option label="管理员" value="1"></el-option>
+                        <el-option label="用户" :value="0"></el-option>
+                        <el-option label="管理员" :value="1"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -128,19 +156,17 @@
             </el-form>
         </el-dialog>
 
-        <el-dialog
-                title="修改密码"
-                :visible.sync="changePasswordDialogVisible"
-                width="30%">
+        <el-dialog title="修改密码" :visible.sync="changePasswordDialogVisible" width="30%">
             <el-form :rules="formRules" ref="updatePassword" :model="updatePassword" label-width="80px" status-icon>
                 <el-form-item label="原密码" prop="password" class="passwordItem">
                     <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
                 </el-form-item>
                 <el-form-item label="新密码" prop="newPassword">
-                    <el-input  type="password" v-model="updatePassword.newPassword"placeholder="请输入新密码"></el-input>
+                    <el-input type="password" v-model="updatePassword.newPassword" placeholder="请输入新密码"></el-input>
                 </el-form-item>
-                <el-form-item label="确认密码" prop="confirmPassword" >
-                    <el-input type="password" v-model="updatePassword.confirmPassword" placeholder="请再次输入新密码"></el-input>
+                <el-form-item label="确认密码" prop="confirmPassword">
+                    <el-input type="password" v-model="updatePassword.confirmPassword"
+                              placeholder="请再次输入新密码"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('updatePassword')">确认</el-button>
@@ -161,16 +187,21 @@
                         <div class="demo-basic--circle">
                             <div class="block">
                                 <div class="avatar-info">
-                                    <el-avatar :size="40" :src="avatar" :class="['avatar-info']" icon="el-icon-user-solid"></el-avatar>
-                                    <span class="username">{{username}}</span>
+                                    <el-avatar :size="40" :src="avatar" :class="['avatar-info']"
+                                               icon="el-icon-user-solid"></el-avatar>
+                                    <span class="username">{{userInfo.username}}</span>
                                 </div>
                             </div>
                         </div>
-                        <el-dropdown-menu slot="dropdown" height="auto" style="margin-top: 0px; margin-right: -30px;">
-                            <el-dropdown-item command="showDialog"><i class="el-icon-edit"></i>修改密码</el-dropdown-item>
-                            <el-dropdown-item command="logout"><i class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
+                        <el-dropdown-menu slot="dropdown" height="auto"
+                                          style="margin-top: 0px; margin-right: -30px;">
+                            <el-dropdown-item command="showDialog"><i
+                                    class="el-icon-edit"></i>修改密码</el-dropdown-item>
+                            <el-dropdown-item command="logout"><i
+                                    class="el-icon-switch-button"></i>退出登录</el-dropdown-item>
                         </el-dropdown-menu>
-                    </el-dropdown></div>
+                    </el-dropdown>
+                </div>
 
             </div>
         </el-header>
@@ -186,6 +217,7 @@
                             <el-menu-item index="2-3" @click="goToAttendanceManager">考勤管理</el-menu-item>
                             <el-menu-item index="2-4" @click="goToApplicationManager">审批管理</el-menu-item>
                             <el-menu-item index="2-5" @click="goToTrainingManager">培训管理</el-menu-item>
+                            <el-menu-item index="2-6" @click="goToTrainingParticManager">培训参与记录</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                     <el-submenu index="3">
@@ -195,7 +227,8 @@
                             <el-menu-item index="3-2" @click="goToStaffManager">员工信息</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
-                    <el-menu-item index="4" @click="goToDepartmentManager"><i class="el-icon-menu"></i>部门管理</el-menu-item>
+                    <el-menu-item index="4" @click="goToDepartmentManager"><i
+                            class="el-icon-menu"></i>部门管理</el-menu-item>
                 </el-menu>
             </el-aside>
 
@@ -222,62 +255,36 @@
                         <el-button type="primary" @click="dialogVisible = true" plain>注册新用户</el-button>
                     </el-row>
 
-                    <el-table
-                            v-loading="loading"
-                            :data="tableData"
-                            stripe style="width: 100%"
-                            :row-style="{height: '60px'}"
-                            :cell-style="{padding: '0'}"
-                            @selection-change="handleSelectionChange">
-                        <el-table-column
-                                type="selection"
-                                width="55">
+                    <el-table v-loading="loading" :data="tableData" stripe style="width: 100%"
+                              :row-style="{height: '60px'}" :cell-style="{padding: '0'}"
+                              @selection-change="handleSelectionChange">
+                        <el-table-column type="selection" width="55">
                         </el-table-column>
-                        <el-table-column
-                                label="序号"
-                                type="index"
-                                width="50">
+                        <el-table-column label="序号" type="index" width="50">
                         </el-table-column>
-                        <el-table-column
-                                prop="id"
-                                label="用户id"
-                                align="center">
+                        <el-table-column prop="id" label="用户id" align="center">
                         </el-table-column>
-                        <el-table-column
-                                prop="username"
-                                label="用户名"
-                                align="center">
+                        <el-table-column prop="username" label="用户名" align="center">
                         </el-table-column>
-                        <el-table-column
-                                prop="password"
-                                label="密码"
-                                align="center">
+                        <el-table-column prop="password" label="密码" align="center">
                         </el-table-column>
-                        <el-table-column
-                                prop="identityStr"
-                                label="身份"
-                                align="center">
+                        <el-table-column prop="identityStr" label="身份" align="center">
                         </el-table-column>
 
-                        <el-table-column
-                                align="center"
-                                label="操作">
+                        <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="primary" size="mini"  @click="updateUserStart(scope.row)" plain>修改</el-button>
-                                <el-button type="danger" size="mini" @click="deleteUser(scope.row)" plain>注销</el-button>
+                                <el-button type="primary" size="mini" @click="updateUserStart(scope.row)"
+                                           plain>修改</el-button>
+                                <el-button type="danger" size="mini" @click="deleteUser(scope.row)"
+                                           plain>注销</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
 
 
-                    <el-pagination
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange"
-                            :current-page="currentPage"
-                            :page-sizes="[5,10,15,20]"
-                            :page-size="pageSize"
-                            layout="total, sizes, prev, pager, next, jumper"
-                            :total="totalCount">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                   :current-page="currentPage" :page-sizes="[5,10,15,20]" :page-size="pageSize"
+                                   layout="total, sizes, prev, pager, next, jumper" :total="totalCount">
                     </el-pagination>
                 </div>
 
@@ -291,7 +298,7 @@
         el: "#app",
         data() {
             let checkPassword = (rule, value, callback) => {
-                if( !value ){
+                if (!value) {
                     callback(new Error('请输入确认密码'));
                 }
                 if (value !== this.updatePassword.newPassword) {
@@ -301,13 +308,14 @@
                 }
             }
             return {
-                updatePassword:{
-                    id:'',
+                updatePassword: {
+                    id: '',
                     password: '',
                     newPassword: '',
                     confirmPassword: '',
                 },
-                changePasswordDialogVisible:false,
+                departmentData: [],
+                changePasswordDialogVisible: false,
                 formRules: {
                     password: [
                         { required: true, message: '请输入原密码', trigger: 'blur' },
@@ -316,19 +324,19 @@
                         { required: true, message: '请输入新密码', trigger: 'blur' },
                     ],
                     confirmPassword: [
-                        { required: true, validator: checkPassword , trigger: 'blur' }
+                        { required: true, validator: checkPassword, trigger: 'blur' }
                     ],
                 },
                 // 表格数据
-                tableData:[],
+                tableData: [],
                 // 新增的用户模型数据
-                user:{
-                    username:'',
-                    password:'',
+                user: {
+                    username: '',
+                    password: '',
                     identity: '0'
                 },
                 // 被选中的id数组
-                selectedIds:[],
+                selectedIds: [],
                 // 复选框选中的记录
                 multipleSelection: [],
                 // 添加数据的对话框是否展示的标记
@@ -336,50 +344,64 @@
                 // 修改数据的对话框是否展示的标记
                 updateDialogVisible: false,
                 // 默认总记录数为100
-                totalCount : 100,
+                totalCount: 100,
                 // 默认当前页为1
                 currentPage: 1,
                 // 默认展示5条
                 pageSize: 5,
                 // 查询表单模型
                 searchForm: {
-                    username:'',
-                    identity:''
+                    username: '',
+                    identity: ''
                 },
                 // 修改表单模型数据
                 updateData: {
-                    username:'',
+                    username: '',
                     password: '',
                     identity: '',
-                    identityStr:''
+                    identityStr: '',
+                    loginName: ''
                 },
                 // 删除数据的模型：
-                deleteData:{
-                    id:'',
+                deleteData: {
+                    id: '',
                 },
                 loading: true,
-                username:'',
-                avatar:'',
-                password:'',
+                username: '',
+                avatar: '',
+                password: '',
+                userInfo: {}
             }
         },
         // 页面加载完成后，发送异步请求，查询数据
-        mounted(){
+        mounted() {
             this.getUsername();
             this.getPassword();
             this.selectAll();
             this.getUserId();
+            this.loadDepartmentData();
         },
 
         methods: {
+            loadDepartmentData() {
+                var _this = this;
+                axios({
+                    method: "get",
+                    url: "http://localhost:8080/EmployeeManagementSystem2/department/selectDepartments"
+                }).then(function (response) {
+                    if (response.data.code === 200) {
+                    }
+                    _this.departmentData = response.data;
+                })
+            },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         var _this = this;
-                        if (_this.updatePassword.password == _this.password){
-                            if (_this.updatePassword.password == _this.updatePassword.confirmPassword){
+                        if (_this.updatePassword.password == _this.password) {
+                            if (_this.updatePassword.password == _this.updatePassword.confirmPassword) {
                                 _this.$message.error('新密码不能与原密码一致，请重试');
-                            }else{
+                            } else {
                                 _this.updatePassword.password = _this.updatePassword.confirmPassword;
                                 axios({
                                     method: "post",
@@ -414,22 +436,24 @@
                     }
                 });
             },
-            getUserId(){
+            getUserId() {
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUserId')
                     .then(response => {
                         this.updatePassword.id = response.data;
                     })
             },
-            showDialog(){
+            showDialog() {
                 this.changePasswordDialogVisible = true;
             },
-            handleCommand(func){
+            handleCommand(func) {
                 eval('this.' + func + '()')
             },
-            getUsername(){
+            getUsername() {
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
                     .then(response => {
-                        this.username = response.data;
+                        if (response.data.code === '200') {
+                            this.userInfo = response.data.data;
+                        }
                     })
             },
             logout() {
@@ -460,34 +484,36 @@
                     });
                 });
             },
-            selectAll(){
+            selectAll() {
                 var _this = this;
                 axios({
                     method: "post",
-                    url: "http://localhost:8080/EmployeeManagementSystem2/user/selectByPageAndCondition?currentPage="+this.currentPage+"&pageSize="+this.pageSize,
-                    data:this.searchForm
-                }).then(function (response){
+                    url: "http://localhost:8080/EmployeeManagementSystem2/user/selectByPageAndCondition?currentPage=" + this.currentPage + "&pageSize=" + this.pageSize,
+                    data: this.searchForm
+                }).then(function (response) {
                     _this.tableData = response.data.rows;
                     _this.totalCount = response.data.totalCount;
                     _this.loading = false;
                 })
             },
             // 新增
-            addUser(){
+            addUser() {
                 var _this = this;
                 axios({
                     method: "post",
                     url: "http://localhost:8080/EmployeeManagementSystem2/user/add",
                     data: this.user
-                }).then(function (response){
+                }).then(function (response) {
                     _this.selectAll();
-                    if (response.data === "success") {
+                    if (response.data.code === "200") {
                         _this.dialogVisible = false;
                         _this.selectAll();
                         _this.$message({
                             message: '添加成功',
                             type: 'success'
                         });
+                    } else {
+                        _this.$message.error(response.data.msg)
                     }
                 })
             },
@@ -504,7 +530,7 @@
                         method: "post",
                         url: "http://localhost:8080/EmployeeManagementSystem2/user/deleteById",
                         data: _this.deleteData
-                    }).then(function (response){
+                    }).then(function (response) {
                         if (response.data === "success") {
                             _this.selectAll();
                             _this.$message({
@@ -516,7 +542,7 @@
                 })
             },
             // 批量删除
-            deleteByIds(){
+            deleteByIds() {
                 this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -531,7 +557,7 @@
                         method: "post",
                         url: "http://localhost:8080/EmployeeManagementSystem2/user/deleteByIds",
                         data: _this.selectedIds
-                    }).then(function (response){
+                    }).then(function (response) {
                         if (response.data === "success") {
                             _this.selectAll();
                             _this.$message({
@@ -548,14 +574,18 @@
                     });
                 });
             },
-            updateUserStart(row){
+            updateUserStart(row) {
                 // // 在updateData里添加identityStr字段，使回显数据时身份一栏显示中文而非数字
                 // if (row.identity === '0') {
                 //     row.identityStr = '用户';
                 // } else if (row.identity === '1') {
                 //     row.identityStr = '管理员';
                 // }
-                this.updateData = JSON.parse(JSON.stringify(row));
+                let data = JSON.parse(JSON.stringify(row));
+                this.updateData = {
+                    ...data,
+                    loginName: data.username,
+                }
                 this.updateDialogVisible = true;
             },
             // 修改
@@ -601,43 +631,47 @@
             },
             // 表单重置
             resetForm() {
-                this.searchForm = { username: '',identity:''};
+                this.searchForm = { username: '', identity: '' };
             },
-            getPassword(){
+            getPassword() {
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getPassword')
                     .then(response => {
                         this.password = response.data;
                     })
             },
-            goToHome(){
+            goToHome() {
                 window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/adminHome.html"
             },
-            goToAnnouncementManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/announcementManager.html"
+            goToAnnouncementManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/announcementManager.html"
             },
-            goToDepartmentManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/departmentManager.html"
+            goToDepartmentManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/departmentManager.html"
             },
-            goToSalaryManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/salaryManager.html"
+            goToSalaryManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/salaryManager.html"
             },
-            goToStaffManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/staffManager.html"
+            goToStaffManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/staffManager.html"
             },
-            goToUserManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/userManager.html"
+            goToUserManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/userManager.html"
             },
-            goToAttendanceManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/attendanceManager.html"
+            goToAttendanceManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/attendanceManager.html"
             },
-            goToApplicationManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/applicationManager.html"
+            goToApplicationManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/applicationManager.html"
             },
-            goToTrainingManager(){
-                window.location.href ="http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
-            }
+            goToTrainingManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
+            },
+            goToTrainingParticManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingParticManager.html"
+            },
         }
     })
 </script>
 </body>
+
 </html>

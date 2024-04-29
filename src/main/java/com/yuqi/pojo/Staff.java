@@ -1,17 +1,14 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 员工类
  * @author yuqi
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Staff {
+
     /**
      * 员工id
      */
@@ -54,15 +51,21 @@ public class Staff {
     private String departmentName;
 
     public String getGenderStr() {
-        if (this.gender == 0) {
+        if(null == this.gender){
+            return "未知";
+        }
+        if (0 == this.gender) {
             return "男";
-        } else if (this.gender == 1) {
+        } else if (1 == this.gender) {
             return "女";
         }
         return "未知";
     }
 
     public String getLevelStr() {
+        if(null == this.level){
+            return "未知";
+        }
         if (this.level == 0) {
             return "员工";
         } else if (this.level == 1) {
@@ -72,6 +75,9 @@ public class Staff {
     }
 
     public String getStatusStr() {
+        if(null == this.status){
+            return "未知";
+        }
         if (this.status == 0) {
             return "在职";
         } else if (this.status == 1) {

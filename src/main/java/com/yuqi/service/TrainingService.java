@@ -1,7 +1,6 @@
 package com.yuqi.service;
 
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Salary;
 import com.yuqi.pojo.Training;
 
 /**
@@ -48,5 +47,13 @@ public interface TrainingService {
      * @return 培训id
      */
      int getTrainingIdByName(String name);
+
+
+    /**
+     * 根据活动ID查询活动信息
+     * @param id
+     * @return
+     */
+    int selectCountById(Integer id);
 
 }

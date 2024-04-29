@@ -111,7 +111,7 @@
                                 <div class="avatar-info">
                                     <el-avatar :size="40" :src="avatar" :class="['avatar-info']"
                                                icon="el-icon-user-solid"></el-avatar>
-                                    <span class="username">{{username}}</span>
+                                    <span class="username">{{userInfo.username}}</span>
                                 </div>
                             </div>
                         </div>
@@ -135,6 +135,7 @@
                             <el-menu-item index="2-3" @click="goToAttendanceManager">考勤管理</el-menu-item>
                             <el-menu-item index="2-4" @click="goToApplicationManager">审批管理</el-menu-item>
                             <el-menu-item index="2-5" @click="goToTrainingManager">培训管理</el-menu-item>
+                            <el-menu-item index="2-6" @click="goToTrainingParticManager">培训参与记录</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                     <el-submenu index="3">
@@ -309,6 +310,7 @@
                 username: '',
                 avatar: '',
                 password:'',
+                userInfo: {}
             }
         },
         // 页面加载完成后，发送异步请求，查询数据
@@ -392,7 +394,9 @@
             getUsername(){
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
                     .then(response => {
-                        this.username = response.data;
+                        if (response.data.code === '200') {
+                            this.userInfo = response.data.data;
+                        }
                     })
             },
             logout() {
@@ -427,8 +431,8 @@
                 var _this = this;
                 axios({
                     method: "post",
-                    url: "http://localhost:8080/EmployeeManagementSystem2/application/selectByPageAndCondition?currentPage=" + this.currentPage + "&pageSize=" + this.pageSize,
-                    data: this.searchForm
+                    url: "http://localhost:8080/EmployeeManagementSystem2/application/selectByPageAndCondition",
+                    data: {...this.searchForm,currentPage:this.currentPage,pageSize:this.pageSize}
                 }).then(function (response) {
                     _this.tableData = response.data.rows;
                     _this.totalCount = response.data.totalCount;
@@ -445,8 +449,7 @@
                     url: "http://localhost:8080/EmployeeManagementSystem2/application/updateApplication",
                     data: this.updateData
                 }).then(function (response) {
-                    if (response.data === "success") {
-                        _this.updateDialogVisible = false;
+                    if (response.data.code === "200") {
                         _this.selectAll();
                         _this.$message({
                             message: '操作成功',
@@ -465,7 +468,7 @@
                     url: "http://localhost:8080/EmployeeManagementSystem2/application/updateApplication",
                     data: this.updateData
                 }).then(function (response) {
-                    if (response.data === "success") {
+                    if (response.data.code === "200") {
                         _this.updateDialogVisible = false;
                         _this.selectAll();
                         _this.$message({
@@ -525,6 +528,9 @@
             },
             goToTrainingManager() {
                 window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
+            },
+            goToTrainingParticManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingParticManager.html"
             }
         }
     })

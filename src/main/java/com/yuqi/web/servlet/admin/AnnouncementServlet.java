@@ -1,20 +1,17 @@
-package com.yuqi.web.servlet.admin;/**
- * @author yuqi
- */
-
+package com.yuqi.web.servlet.admin;
 import com.alibaba.fastjson.JSON;
-import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Announcement;
+import com.yuqi.pojo.PageBean;
 import com.yuqi.service.AnnouncementService;
 import com.yuqi.service.impl.AnnouncementServiceImpl;
 import com.yuqi.web.servlet.BaseServlet;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -30,16 +27,6 @@ public class AnnouncementServlet extends BaseServlet {
         BufferedReader br = request.getReader();
         String params = br.readLine();
         Announcement announcement = JSON.parseObject(params, Announcement.class);
-        // 获取当前日期和时间
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        // 格式化
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDateTime = currentDateTime.format(formatter);
-
-        announcement.setCreatedTime(formattedDateTime);
-        announcement.setLastUpdateTime(formattedDateTime);
-
         announcementService.add(announcement);
         response.getWriter().write("success");
     }
@@ -50,12 +37,6 @@ public class AnnouncementServlet extends BaseServlet {
 
         Announcement announcement = JSON.parseObject(params, Announcement.class);
 
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDateTime = currentDateTime.format(formatter);
-
-        announcement.setLastUpdateTime(formattedDateTime);
         announcementService.updateAnnouncement(announcement);
 
         response.getWriter().write("success");

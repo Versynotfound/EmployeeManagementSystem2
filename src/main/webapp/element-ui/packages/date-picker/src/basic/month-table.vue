@@ -13,12 +13,12 @@
 </template>
 
 <script type="text/babel">
-  import Locale from 'element-ui/src/mixins/locale';
-  import { isDate, range, getDayCountOfMonth, nextDate } from 'element-ui/src/utils/date-util';
-  import { hasClass } from 'element-ui/src/utils/dom';
-  import { arrayFindIndex, coerceTruthyValueToArray, arrayFind } from 'element-ui/src/utils/util';
+import Locale from 'element-ui/src/mixins/locale';
+import {getDayCountOfMonth, isDate, nextDate, range} from 'element-ui/src/utils/date-util';
+import {hasClass} from 'element-ui/src/utils/dom';
+import {arrayFind, arrayFindIndex, coerceTruthyValueToArray} from 'element-ui/src/utils/util';
 
-  const datesInMonth = (year, month) => {
+const datesInMonth = (year, month) => {
     const numOfDays = getDayCountOfMonth(year, month);
     const firstDay = new Date(year, month, 1);
     return range(numOfDays).map(n => nextDate(firstDay, n));

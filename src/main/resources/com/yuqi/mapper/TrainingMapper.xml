@@ -36,4 +36,10 @@
         </where>
     </select>
 
+
+    <select id="selectCountById" resultType="java.lang.Integer">
+        select count(1) from tb_training where id = #{id}
+    </select>
+
+
 </mapper>

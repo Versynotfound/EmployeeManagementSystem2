@@ -1,16 +1,12 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 公告类
  * @author yuqi
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Announcement {
     /**
      * 公告id

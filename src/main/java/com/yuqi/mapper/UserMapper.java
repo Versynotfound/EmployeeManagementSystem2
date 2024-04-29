@@ -1,8 +1,6 @@
 package com.yuqi.mapper;
 
-import com.yuqi.pojo.*;
-import com.yuqi.pojo.User;
-import com.yuqi.pojo.User;
+import com.yuqi.pojo.CheckoutLoginInfo;
 import com.yuqi.pojo.User;
 import org.apache.ibatis.annotations.*;
 
@@ -17,7 +15,8 @@ public interface UserMapper {
      * 添加
      * @param user 用户
      */
-    @Insert("insert into tb_user values( null,#{user.username},#{user.password},#{user.identity})")
+    @Insert("insert into tb_user(username,password,identity) values( #{user.username},#{user.password},#{user.identity})")
+    @SelectKey(statement = "select last_insert_id() from dual", keyColumn = "id",keyProperty = "user.id", before = false, resultType = Integer.class)
     void add(@Param("user") User user);
 
     /**
@@ -72,4 +71,16 @@ public interface UserMapper {
      */
     @Select("select * from tb_user where username = #{username} and password = #{password}")
     User select(@Param("username") String username, @Param("password") String password);
+
+
+    /**
+     * 获取登录用户信息
+     * @param username
+     * @return
+     */
+    CheckoutLoginInfo selectLoginByLoginName(@Param("loginName") String username);
+
+    @Select("select count(1) from tb_user where username = #{loginName}")
+    int selectCountByLoginName(@Param("loginName") String loginName);
+
 }

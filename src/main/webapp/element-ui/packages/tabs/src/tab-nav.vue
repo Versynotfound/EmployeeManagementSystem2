@@ -1,8 +1,8 @@
 <script>
-  import TabBar from './tab-bar';
-  import { addResizeListener, removeResizeListener } from 'element-ui/src/utils/resize-event';
+import TabBar from './tab-bar';
+import {addResizeListener, removeResizeListener} from 'element-ui/src/utils/resize-event';
 
-  function noop() {}
+function noop() {}
   const firstUpperCase = str => {
     return str.toLowerCase().replace(/( |^)[a-z]/g, (L) => L.toUpperCase());
   };

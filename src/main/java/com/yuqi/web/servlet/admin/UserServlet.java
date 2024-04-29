@@ -1,10 +1,15 @@
 package com.yuqi.web.servlet.admin;
 
 import com.alibaba.fastjson.JSON;
-import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.User;
+import com.yuqi.common.ResultDTO;
+import com.yuqi.constant.BaseConstant;
+import com.yuqi.pojo.*;
+import com.yuqi.pojo.user.CreateUserReq;
+import com.yuqi.service.StaffService;
 import com.yuqi.service.UserService;
+import com.yuqi.service.impl.StaffServiceImpl;
 import com.yuqi.service.impl.UserServiceImpl;
+import com.yuqi.utils.GetQueryParamUtil;
 import com.yuqi.web.servlet.BaseServlet;
 
 import javax.servlet.ServletException;
@@ -24,12 +29,34 @@ import java.io.IOException;
 public class UserServlet extends BaseServlet {
     private UserService userService = new UserServiceImpl();
 
+    private StaffService staffService = new StaffServiceImpl();
+
     public void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        BufferedReader br = request.getReader();
-        String params = br.readLine();
-        User user = JSON.parseObject(params, User.class);
-        userService.add(user);
-        response.getWriter().write("success");
+        CreateUserReq createUserReq = GetQueryParamUtil.getQueryParam(CreateUserReq.class,request);
+
+        int userExits = userService.selectCountByLoginName(createUserReq.getLoginName());
+        if(BaseConstant.ZERO != userExits){
+            ResultDTO<String> resultDto =  ResultDTO.fail("用户已存在,请勿重复创建");
+            String jsonString = JSON.toJSONString(resultDto);
+            response.setContentType("text/json;charset=utf-8");
+            response.getWriter().write(jsonString);
+            return;
+        }
+
+        try {
+            userService.add(createUserReq);
+        }catch (Exception e){
+            ResultDTO<String> resultDto =  ResultDTO.fail("操作失败");
+            String jsonString = JSON.toJSONString(resultDto);
+            response.setContentType("text/json;charset=utf-8");
+            response.getWriter().write(jsonString);
+            return;
+        }
+
+        ResultDTO<String> resultDto =  ResultDTO.success("操作成功");
+        String jsonString = JSON.toJSONString(resultDto);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(jsonString);
     }
 
     public void updateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -85,19 +112,21 @@ public class UserServlet extends BaseServlet {
 
     public void getUsername(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            String username = user.getUsername();
+        LoginUser loginUser = (LoginUser) session.getAttribute("user");
+        if (null != loginUser) {
+            Staff staff = staffService.selectByUserId(loginUser.getId());
             response.setContentType("text/plain;charset=utf-8");
-            response.getWriter().write(username);
+            String result = JSON.toJSONString(ResultDTO.success(staff));
+            response.getWriter().write(result);
         }
     }
 
     public void getPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            String password = user.getPassword();
+        LoginUser loginUser = (LoginUser) session.getAttribute("user");
+        if (loginUser != null) {
+            CheckoutLoginInfo checkoutLoginInfo = userService.login(loginUser.getUserName());
+            String password = checkoutLoginInfo.getPassword();
             response.setContentType("text/plain;charset=utf-8");
             response.getWriter().write(password);
         }
@@ -105,9 +134,9 @@ public class UserServlet extends BaseServlet {
 
     public void getUserId(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            String userId = Integer.toString(user.getId());
+        LoginUser loginUser = (LoginUser) session.getAttribute("user");
+        if (loginUser != null) {
+            String userId = Integer.toString(loginUser.getId());
             response.getWriter().write(userId);
         }
     }
@@ -116,5 +145,7 @@ public class UserServlet extends BaseServlet {
         request.getSession().invalidate();
         response.getWriter().write("success");
     }
+
+
 
 }

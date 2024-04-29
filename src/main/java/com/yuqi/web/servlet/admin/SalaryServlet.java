@@ -1,13 +1,14 @@
 package com.yuqi.web.servlet.admin;
 
 import com.alibaba.fastjson.JSON;
+import com.yuqi.enums.UserIdentityEnum;
+import com.yuqi.pojo.LoginUser;
 import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Salary;
-import com.yuqi.pojo.Staff;
 import com.yuqi.service.SalaryService;
-import com.yuqi.service.StaffService;
 import com.yuqi.service.impl.SalaryServiceImpl;
-import com.yuqi.service.impl.StaffServiceImpl;
+import com.yuqi.utils.GetQueryParamUtil;
+import com.yuqi.utils.LoginUserUtil;
 import com.yuqi.web.servlet.BaseServlet;
 
 import javax.servlet.ServletException;
@@ -61,20 +62,29 @@ public class SalaryServlet extends BaseServlet {
         response.getWriter().write("success");
     }
 
+    /**
+     * 获取薪资列表。管理员可以带员工查询条件,用户登录的时候则带自己的员工ID作为条件查询
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     public void selectByPageAndCondition(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String currentPageStr = request.getParameter("currentPage");
-        String pageSizeStr = request.getParameter("pageSize");
+        Salary salary = GetQueryParamUtil.getQueryParam(Salary.class,request);
+        //员工登录的时候进行此处查询
+        LoginUser loginUser = LoginUserUtil.getLoginUser(request);
+        Integer roleId = loginUser.getIdentity();
+        if(UserIdentityEnum.NORMAL.getCode() == roleId){
+            salary.setStaffId(loginUser.getUserId());
+        }
 
-        int currentPage = Integer.parseInt(currentPageStr);
-        int pageSize = Integer.parseInt(pageSizeStr);
-
-        BufferedReader br = request.getReader();
-        String params = br.readLine();
-        Salary salary = JSON.parseObject(params,Salary.class);
-        PageBean<Salary> pageBean = salaryService.selectByPageAndCondition(currentPage, pageSize, salary);
+        PageBean<Salary> pageBean = salaryService.selectByPageAndCondition(salary.getCurrentPage(), salary.getPageSize(), salary);
 
         String jsonString = JSON.toJSONString(pageBean);
         response.setContentType("text/json;charset=utf-8");
         response.getWriter().write(jsonString);
     }
+
+
+
 }

@@ -1,16 +1,12 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 部门类
  * @author yuqi
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Department {
     /**
      * 部门id

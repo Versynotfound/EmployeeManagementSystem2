@@ -1,12 +1,9 @@
 package com.yuqi.service.impl;
 
 import com.yuqi.mapper.StaffMapper;
-import com.yuqi.mapper.StaffMapper;
 import com.yuqi.mapper.UserMapper;
 import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.Staff;
-import com.yuqi.pojo.User;
 import com.yuqi.service.StaffService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -126,4 +123,18 @@ public class StaffServiceImpl implements StaffService {
         sqlSession.close();
         return rows;
     }
+
+    /**
+     * 根据用户ID修改员工信息
+     * @param staff
+     */
+    @Override
+    public void updateByUserId(Staff staff) {
+        SqlSession sqlSession = factory.openSession();
+        StaffMapper mapper = sqlSession.getMapper(StaffMapper.class);
+        mapper.updateByUserId(staff);
+        sqlSession.commit();
+        sqlSession.close();
+    }
+
 }

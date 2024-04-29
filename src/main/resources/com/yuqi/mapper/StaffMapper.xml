@@ -15,7 +15,8 @@
     </delete>
     <select id="selectByPageAndCondition" resultMap="staffResultMap">
         select tb_staff.*,tb_user.username as username,tb_department.name as departmentName from tb_staff
-        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id =
+        tb_department.id
         <where>
             <if test="staff.name != null and staff.name != ''">
                 and tb_staff.name like #{staff.name}
@@ -40,7 +41,8 @@
     </select>
     <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
         select count(*) from tb_staff
-        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id =
+        tb_department.id
         <where>
             <if test="name != null and name != ''">
                 and tb_staff.name like #{name}
@@ -63,8 +65,10 @@
         </where>
     </select>
     <select id="selectByUserId" resultMap="staffResultMap">
-        select tb_staff.*,tb_user.username as username,tb_department.name as departmentName from tb_staff
-        left join tb_user on tb_staff.user_id = tb_user.id left join tb_department on tb_staff.department_id = tb_department.id
+        select tb_staff.*, tb_user.username as username, tb_department.name as departmentName
+        from tb_staff
+                 left join tb_user on tb_staff.user_id = tb_user.id
+                 left join tb_department on tb_staff.department_id = tb_department.id
         where user_id = #{id}
     </select>
 

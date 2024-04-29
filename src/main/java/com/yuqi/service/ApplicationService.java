@@ -2,7 +2,6 @@ package com.yuqi.service;
 
 import com.yuqi.pojo.Application;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Salary;
 
 /**
  * Application接口，定义了申请服务层的相关操作方法。
@@ -19,7 +18,7 @@ public interface ApplicationService {
      * 管理员审批
      * @param application 申请信息
      */
-    void updateApplication(Application application);
+    void updateApplication(Application application) throws Exception;
 
     /**
      * 带条件分页查询

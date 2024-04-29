@@ -3,7 +3,6 @@ package com.yuqi.web.servlet.admin;
 import com.alibaba.fastjson.JSON;
 import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Staff;
 import com.yuqi.service.DepartmentService;
 import com.yuqi.service.impl.DepartmentServiceImpl;
 import com.yuqi.web.servlet.BaseServlet;

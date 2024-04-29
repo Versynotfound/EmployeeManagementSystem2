@@ -1,10 +1,9 @@
 package com.yuqi.service.impl;
 
 import com.yuqi.mapper.AnnouncementMapper;
-import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Announcement;
+import com.yuqi.pojo.PageBean;
 import com.yuqi.service.AnnouncementService;
-import com.yuqi.service.UserService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -23,6 +22,16 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     public void add(Announcement announcement) {
         SqlSession sqlSession = factory.openSession();
         AnnouncementMapper mapper = sqlSession.getMapper(AnnouncementMapper.class);
+        // 获取当前日期和时间
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // 格式化
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+
+        announcement.setCreatedTime(formattedDateTime);
+        announcement.setLastUpdateTime(formattedDateTime);
+
         mapper.add(announcement);
         sqlSession.commit();
         sqlSession.close();
@@ -31,7 +40,13 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Override
     public void updateAnnouncement(Announcement announcement) {
         SqlSession sqlSession = factory.openSession();
+
         AnnouncementMapper mapper = sqlSession.getMapper(AnnouncementMapper.class);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+        announcement.setLastUpdateTime(formattedDateTime);
+
         mapper.update(announcement);
         sqlSession.commit();
         sqlSession.close();

@@ -1,7 +1,7 @@
 package com.yuqi.service;
 
-import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Announcement;
+import com.yuqi.pojo.PageBean;
 
 /**
  * AnnouncementService接口，定义了公告服务层的相关操作方法。

@@ -1,17 +1,16 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
+import com.yuqi.common.BasePage;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 /**
  * 申请类
  * @author yuqi
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Application {
+public class Application extends BasePage {
     /**
      * 主键
      */

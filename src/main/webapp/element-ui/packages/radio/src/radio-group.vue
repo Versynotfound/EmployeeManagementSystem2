@@ -9,9 +9,9 @@
   </component>
 </template>
 <script>
-  import Emitter from 'element-ui/src/mixins/emitter';
+import Emitter from 'element-ui/src/mixins/emitter';
 
-  const keyCode = Object.freeze({
+const keyCode = Object.freeze({
     LEFT: 37,
     UP: 38,
     RIGHT: 39,

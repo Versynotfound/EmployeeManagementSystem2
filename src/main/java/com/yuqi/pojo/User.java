@@ -1,23 +1,19 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 用户类
  * @author yuqi
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class User {
     /**
      * 用户id
      */
     private Integer id;
     /**
-     * 用户名
+     * 登录名称
      */
     private String username ;
     /**

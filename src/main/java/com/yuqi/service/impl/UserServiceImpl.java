@@ -1,13 +1,12 @@
 package com.yuqi.service.impl;
 
+import com.yuqi.mapper.StaffMapper;
 import com.yuqi.mapper.UserMapper;
-import com.yuqi.mapper.UserMapper;
-import com.yuqi.mapper.UserMapper;
-import com.yuqi.mapper.UserMapper;
-import com.yuqi.pojo.*;
+import com.yuqi.pojo.CheckoutLoginInfo;
+import com.yuqi.pojo.PageBean;
+import com.yuqi.pojo.Staff;
 import com.yuqi.pojo.User;
-import com.yuqi.pojo.User;
-import com.yuqi.service.UserService;
+import com.yuqi.pojo.user.CreateUserReq;
 import com.yuqi.service.UserService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -22,13 +21,52 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     SqlSessionFactory factory = SqlSessionFactoryUtil.getSqlSessionFactory();
     @Override
-    public void add(User user) {
+    public void add(CreateUserReq createUserReq) throws Exception {
         SqlSession sqlSession = factory.openSession();
-        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-        mapper.add(user);
-        sqlSession.commit();
-        sqlSession.close();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        StaffMapper staffMapper = sqlSession.getMapper(StaffMapper.class);
+
+        if (createUserReq.getPassword() == null || createUserReq.getPassword().isEmpty()) {
+            createUserReq.setPassword("1234");
+        }
+
+
+        try {
+            User user = packageUser(createUserReq);
+            userMapper.add(user);
+            Staff staff =  packageStaff(createUserReq,user);
+            staffMapper.add(staff);
+            sqlSession.commit();
+        }catch (Exception e){
+            sqlSession.rollback();
+            throw new Exception("操作失败");
+        }finally {
+            sqlSession.close();
+        }
     }
+
+
+    private Staff packageStaff(CreateUserReq createUserReq,User user){
+        Staff staff = new Staff();
+        staff.setUserId(user.getId());
+        staff.setName(createUserReq.getName());
+        staff.setLevel(createUserReq.getLevel());
+        staff.setDepartmentId(createUserReq.getDepartmentId());
+        staff.setGender(createUserReq.getGender());
+        staff.setStatus(createUserReq.getStatus());
+        staff.setPhone(createUserReq.getPhone());
+        return staff;
+    }
+
+
+    private User packageUser(CreateUserReq createUserReq){
+        User user = new User();
+        user.setUsername(createUserReq.getLoginName());
+        user.setPassword(createUserReq.getPassword());
+        user.setIdentity(createUserReq.getIdentity());
+        return user;
+    }
+
 
     @Override
     public void updateUser(User user) {
@@ -92,11 +130,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String username, String password) {
+    public CheckoutLoginInfo login(String username) {
         SqlSession sqlSession = factory.openSession();
         UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-        User user = mapper.select(username,password);
+        CheckoutLoginInfo user = mapper.selectLoginByLoginName(username);
         sqlSession.close();
         return user;
+    }
+
+    /**
+     * 根据登录用户名id查询用户是否存在
+     * @param loginName
+     * @return
+     */
+    @Override
+    public int selectCountByLoginName(String loginName) {
+        SqlSession sqlSession = factory.openSession();
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        return mapper.selectCountByLoginName(loginName);
     }
 }

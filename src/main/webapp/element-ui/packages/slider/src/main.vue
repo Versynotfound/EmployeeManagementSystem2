@@ -74,12 +74,12 @@
 </template>
 
 <script type="text/babel">
-  import ElInputNumber from 'element-ui/packages/input-number';
-  import SliderButton from './button.vue';
-  import SliderMarker from './marker';
-  import Emitter from 'element-ui/src/mixins/emitter';
+import ElInputNumber from 'element-ui/packages/input-number';
+import SliderButton from './button.vue';
+import SliderMarker from './marker';
+import Emitter from 'element-ui/src/mixins/emitter';
 
-  export default {
+export default {
     name: 'ElSlider',
 
     mixins: [Emitter],

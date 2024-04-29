@@ -1,13 +1,16 @@
 package com.yuqi.web.servlet.admin;
 
 import com.alibaba.fastjson.JSON;
+import com.yuqi.enums.UserIdentityEnum;
 import com.yuqi.pojo.Attendance;
+import com.yuqi.pojo.LoginUser;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Salary;
 import com.yuqi.service.AttendanceService;
 import com.yuqi.service.SalaryService;
 import com.yuqi.service.impl.AttendanceServiceImpl;
 import com.yuqi.service.impl.SalaryServiceImpl;
+import com.yuqi.utils.GetQueryParamUtil;
+import com.yuqi.utils.LoginUserUtil;
 import com.yuqi.web.servlet.BaseServlet;
 
 import javax.servlet.ServletException;
@@ -74,16 +77,14 @@ public class AttendanceServlet extends BaseServlet {
     }
 
     public void selectByPageAndCondition(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String currentPageStr = request.getParameter("currentPage");
-        String pageSizeStr = request.getParameter("pageSize");
-
-        int currentPage = Integer.parseInt(currentPageStr);
-        int pageSize = Integer.parseInt(pageSizeStr);
-
-        BufferedReader br = request.getReader();
-        String params = br.readLine();
-        Attendance attendance = JSON.parseObject(params,Attendance.class);
-        PageBean<Attendance> pageBean = attendanceService.selectByPageAndCondition(currentPage, pageSize, attendance);
+        Attendance attendance = GetQueryParamUtil.getQueryParam(Attendance.class,request);
+        //员工登录的时候进行此处查询
+        LoginUser loginUser = LoginUserUtil.getLoginUser(request);
+        Integer roleId = loginUser.getIdentity();
+        if(UserIdentityEnum.NORMAL.getCode() == roleId){
+            attendance.setStaffId(loginUser.getUserId());
+        }
+        PageBean<Attendance> pageBean = attendanceService.selectByPageAndCondition(attendance.getCurrentPage(), attendance.getPageSize(), attendance);
 
         String jsonString = JSON.toJSONString(pageBean);
         response.setContentType("text/json;charset=utf-8");

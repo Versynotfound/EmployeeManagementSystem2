@@ -188,29 +188,29 @@
 </template>
 
 <script type="text/babel">
-  import {
-    formatDate,
-    parseDate,
-    isDate,
-    modifyDate,
-    modifyTime,
-    modifyWithTimeString,
-    prevYear,
-    nextYear,
-    prevMonth,
-    nextMonth,
-    nextDate,
-    extractDateFormat,
-    extractTimeFormat
-  } from 'element-ui/src/utils/date-util';
-  import Clickoutside from 'element-ui/src/utils/clickoutside';
-  import Locale from 'element-ui/src/mixins/locale';
-  import TimePicker from './time';
-  import DateTable from '../basic/date-table';
-  import ElInput from 'element-ui/packages/input';
-  import ElButton from 'element-ui/packages/button';
+import {
+  extractDateFormat,
+  extractTimeFormat,
+  formatDate,
+  isDate,
+  modifyDate,
+  modifyTime,
+  modifyWithTimeString,
+  nextDate,
+  nextMonth,
+  nextYear,
+  parseDate,
+  prevMonth,
+  prevYear
+} from 'element-ui/src/utils/date-util';
+import Clickoutside from 'element-ui/src/utils/clickoutside';
+import Locale from 'element-ui/src/mixins/locale';
+import TimePicker from './time';
+import DateTable from '../basic/date-table';
+import ElInput from 'element-ui/packages/input';
+import ElButton from 'element-ui/packages/button';
 
-  const calcDefaultValue = (defaultValue) => {
+const calcDefaultValue = (defaultValue) => {
     if (Array.isArray(defaultValue)) {
       return [new Date(defaultValue[0]), new Date(defaultValue[1])];
     } else if (defaultValue) {

@@ -14,7 +14,8 @@
     </delete>
     <select id="selectByPageAndCondition" resultMap="attendanceResultMap">
         select tb_attendance.*,tb_staff.name as staffName,tb_department.name as departmentName from tb_attendance
-        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id = tb_department.id
+        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id =
+        tb_department.id
         <where>
             <if test="attendance.date != null and attendance.date != ''">
                 and date = #{attendance.date}
@@ -28,12 +29,17 @@
             <if test="attendance.departmentId != null">
                 and tb_staff.department_id = #{attendance.departmentId}
             </if>
+            <if test="attendance.staffId != null">
+                and tb_staff.id = #{attendance.staffId}
+            </if>
+
         </where>
         limit #{begin},#{size}
     </select>
     <select id="selectTotalCountByCondition" resultType="java.lang.Integer">
         select count(*) from tb_attendance
-        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id = tb_department.id
+        left join tb_staff on tb_attendance.staff_id = tb_staff.id left join tb_department on tb_staff.department_id =
+        tb_department.id
         <where>
             <if test="date != null and date != ''">
                 and date = #{date}

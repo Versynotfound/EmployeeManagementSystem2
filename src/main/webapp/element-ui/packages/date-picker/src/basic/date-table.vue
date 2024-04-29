@@ -32,11 +32,20 @@
 </template>
 
 <script>
-  import { getFirstDayOfMonth, getDayCountOfMonth, getWeekNumber, getStartDateOfMonth, prevDate, nextDate, isDate, clearTime as _clearTime} from 'element-ui/src/utils/date-util';
-  import Locale from 'element-ui/src/mixins/locale';
-  import { arrayFindIndex, arrayFind, coerceTruthyValueToArray } from 'element-ui/src/utils/util';
+import {
+  clearTime as _clearTime,
+  getDayCountOfMonth,
+  getFirstDayOfMonth,
+  getStartDateOfMonth,
+  getWeekNumber,
+  isDate,
+  nextDate,
+  prevDate
+} from 'element-ui/src/utils/date-util';
+import Locale from 'element-ui/src/mixins/locale';
+import {arrayFind, arrayFindIndex, coerceTruthyValueToArray} from 'element-ui/src/utils/util';
 
-  const WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const getDateTimestamp = function(time) {
     if (typeof time === 'number' || typeof time === 'string') {
       return _clearTime(new Date(time)).getTime();

@@ -35,4 +35,20 @@
         </where>
     </select>
 
+
+    <select id="selectLoginByLoginName" resultType="com.yuqi.pojo.CheckoutLoginInfo">
+        select loginInfo.id       as id,
+               loginInfo.username as username,
+               loginInfo.password as password,
+               loginInfo.identity as identity,
+               staff.id           as userId,
+               staff.name         as name,
+               staff.level        as level,
+               department.id      as departmentId,
+               department.name    as departmentName
+        from tb_user loginInfo
+                 inner join tb_staff staff on loginInfo.id = staff.user_id
+                 inner join tb_department department on staff.department_id = department.id
+        where loginInfo.username = #{loginName}
+    </select>
 </mapper>

@@ -143,35 +143,35 @@
 </template>
 
 <script type="text/babel">
-  import {
-    formatDate,
-    parseDate,
-    getWeekNumber,
-    isDate,
-    modifyDate,
-    modifyTime,
-    modifyWithTimeString,
-    clearMilliseconds,
-    clearTime,
-    prevYear,
-    nextYear,
-    prevMonth,
-    nextMonth,
-    changeYearMonthAndClampDate,
-    extractDateFormat,
-    extractTimeFormat,
-    timeWithinRange
-  } from 'element-ui/src/utils/date-util';
-  import Clickoutside from 'element-ui/src/utils/clickoutside';
-  import Locale from 'element-ui/src/mixins/locale';
-  import ElInput from 'element-ui/packages/input';
-  import ElButton from 'element-ui/packages/button';
-  import TimePicker from './time';
-  import YearTable from '../basic/year-table';
-  import MonthTable from '../basic/month-table';
-  import DateTable from '../basic/date-table';
+import {
+  changeYearMonthAndClampDate,
+  clearMilliseconds,
+  clearTime,
+  extractDateFormat,
+  extractTimeFormat,
+  formatDate,
+  getWeekNumber,
+  isDate,
+  modifyDate,
+  modifyTime,
+  modifyWithTimeString,
+  nextMonth,
+  nextYear,
+  parseDate,
+  prevMonth,
+  prevYear,
+  timeWithinRange
+} from 'element-ui/src/utils/date-util';
+import Clickoutside from 'element-ui/src/utils/clickoutside';
+import Locale from 'element-ui/src/mixins/locale';
+import ElInput from 'element-ui/packages/input';
+import ElButton from 'element-ui/packages/button';
+import TimePicker from './time';
+import YearTable from '../basic/year-table';
+import MonthTable from '../basic/month-table';
+import DateTable from '../basic/date-table';
 
-  export default {
+export default {
     mixins: [Locale],
 
     directives: { Clickoutside },

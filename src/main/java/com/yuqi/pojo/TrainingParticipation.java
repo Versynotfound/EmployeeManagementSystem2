@@ -1,16 +1,12 @@
 package com.yuqi.pojo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 培训参与类，为员工和培训的中间表创建
  * @author yuqi
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TrainingParticipation {
     /**
      * 主键

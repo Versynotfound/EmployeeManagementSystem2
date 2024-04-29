@@ -1,11 +1,12 @@
 package com.yuqi.mapper;
 
-import com.yuqi.pojo.Announcement;
-import com.yuqi.pojo.Training;
+import com.yuqi.pojo.QueryStaffInvolvedActivity;
 import com.yuqi.pojo.TrainingParticipation;
+import com.yuqi.pojo.activity.ActivityScoreReq;
+import com.yuqi.pojo.activity.QueryActivityInvolvedReq;
+import com.yuqi.pojo.activity.QueryActivityInvolvedResp;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface TrainingParticMapper {
      * 添加
      * @param trainingPartic 培训参与情况
      */
-    @Insert("insert into tb_training_participation(id,training_id,staff_id) values( null,#{trainingPartic.trainingId},#{trainingPartic.staffId})")
+    @Insert("insert into tb_training_participation(training_id,staff_id) values(#{trainingParticipation.trainingId},#{trainingParticipation.staffId})")
     void add(@Param("trainingParticipation") TrainingParticipation trainingPartic);
 
     /**
@@ -36,4 +37,40 @@ public interface TrainingParticMapper {
      * @return 总记录数
      */
     int selectTotalCountByStaffId(int id);
+
+    /**
+     * 获取当前登录用户已参加过的活动
+     * @param queryStaffInvolvedActivity
+     * @return
+     */
+    List<TrainingParticipation> queryStaffInvolvedActivity(@Param("req") QueryStaffInvolvedActivity queryStaffInvolvedActivity);
+
+    /**
+     * 根据用户ID以及活动ID查询用户是否已参与该活动
+     * @param staffId
+     * @param activeId
+     * @return
+     */
+    int selectCountById(@Param("staffId") Integer staffId,@Param("activeId")Integer activeId);
+
+    /**
+     * 查询当前登录用户已参加过的活动
+     * @param queryActivityInvolvedReq
+     * @return
+     */
+    List<QueryActivityInvolvedResp> pageInvolvedActivityList(@Param("req") QueryActivityInvolvedReq queryActivityInvolvedReq);
+
+    /**
+     * 获取当前登录用户已参加过的活动总数
+     * @param queryActivityInvolvedReq
+     * @return
+     */
+    Integer pageInvolvedActivityListCount(@Param("req") QueryActivityInvolvedReq queryActivityInvolvedReq);
+
+    /**
+     * 更新活动分数
+     * @param activityScoreReq
+     * @return
+     */
+    int updateScoreById(@Param("req") ActivityScoreReq activityScoreReq);
 }

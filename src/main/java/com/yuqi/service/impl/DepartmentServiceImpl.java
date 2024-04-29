@@ -1,10 +1,8 @@
 package com.yuqi.service.impl;
 
 import com.yuqi.mapper.DepartmentMapper;
-import com.yuqi.mapper.StaffMapper;
 import com.yuqi.pojo.Department;
 import com.yuqi.pojo.PageBean;
-import com.yuqi.pojo.Staff;
 import com.yuqi.service.DepartmentService;
 import com.yuqi.utils.SqlSessionFactoryUtil;
 import org.apache.ibatis.session.SqlSession;

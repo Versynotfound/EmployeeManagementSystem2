@@ -1,7 +1,8 @@
 package com.yuqi.web.servlet.admin;
 
 import com.alibaba.fastjson.JSON;
-import com.yuqi.pojo.*;
+import com.yuqi.common.ResultDTO;
+import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.Staff;
 import com.yuqi.service.StaffService;
 import com.yuqi.service.impl.StaffServiceImpl;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 员工servlet
@@ -95,13 +97,44 @@ public class  StaffServlet extends BaseServlet {
     public void selectByUserId(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BufferedReader br = request.getReader();
         String params = br.readLine();
-        int id = JSON.parseObject(params, int.class);
-        Staff staff = staffService.selectByUserId(id);
+        Map<String,String> parseMap = JSON.parseObject(params, Map.class);
+        String id = parseMap.get("id");
+        Staff staff = new Staff();
+        if(null != id && !"".equals(id)){
+            staff = staffService.selectByUserId(Integer.valueOf(id));
+        }
         String jsonString = JSON.toJSONString(staff);
         response.setContentType("text/json;charset=utf-8");
         response.getWriter().write(jsonString);
-
     }
+
+
+    public void changeUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BufferedReader br = request.getReader();
+        String params = br.readLine();
+        Staff staff =  JSON.parseObject(params, Staff.class);
+        try {
+            Staff oldStaff = staffService.selectByUserId(staff.getUserId());
+            if (null == oldStaff) {
+                staffService.add(staff);
+            } else {
+                staffService.updateByUserId(staff);
+            }
+        }catch (Exception e){
+            ResultDTO<String> result = ResultDTO.fail("操作失败");
+            String resultString = JSON.toJSONString(result);
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(resultString);
+            return;
+        }
+        ResultDTO<String> result = ResultDTO.success("成功");
+        String resultString = JSON.toJSONString(result);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(resultString);
+    }
+
+
+
 
 
 

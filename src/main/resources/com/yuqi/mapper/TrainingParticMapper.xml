@@ -3,24 +3,107 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuqi.mapper.TrainingParticMapper">
-    <resultMap id="trainingParticResultMap" type="trainingParticipation">
+    <resultMap id="trainingParticResultMap" type="com.yuqi.pojo.TrainingParticipation">
+        <result property="id" column="id"/>
         <result property="staffId" column="staff_id"/>
         <result property="trainingId" column="training_id"/>
+        <result property="score" column="score"/>
     </resultMap>
+
+    <sql id="queryBase">
+        id,staff_id,training_id,score
+    </sql>
+
+
     <select id="selectByStaffId" resultMap="trainingParticResultMap">
-        select t.name as trainingName,t.start_time as startTime,t.end_time as endTime,tp.score from tb_training_participation tp
-        left join tb_staff s on tp.staff_id = s.id
-        left join tb_training t on tp.training_id = t.id
+        select t.name as trainingName, t.start_time as startTime, t.end_time as endTime, tp.score
+        from tb_training_participation tp
+                 left join tb_staff s on tp.staff_id = s.id
+                 left join tb_training t on tp.training_id = t.id
         where tp.id = #{id}
         limit #{begin},#{size}
     </select>
 
     <select id="selectTotalCountByStaffId" resultType="java.lang.Integer">
-        select count(*) from tb_training_participation tp
-        left join tb_staff s on tp.staff_id = s.id
-        left join tb_training t on tp.training_id = t.id
+        select count(*)
+        from tb_training_participation tp
+                 left join tb_staff s on tp.staff_id = s.id
+                 left join tb_training t on tp.training_id = t.id
         where tp.id = #{id}
     </select>
 
+    <select id="queryStaffInvolvedActivity" resultMap="trainingParticResultMap">
+        select
+        <include refid="queryBase"/>
+        from tb_training_participation
+        <where>
+            <if test="null != req.acitiveIdList">
+                training_id in
+                <foreach item="id" collection="req.acitiveIdList" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+            and staff_id = #{req.staffId}
+        </where>
+    </select>
+
+    <select id="selectCountById" resultType="java.lang.Integer">
+        select count(1)
+        from tb_training_participation
+        <where>
+            training_id = #{activeId} and staff_id = #{staffId}
+        </where>
+    </select>
+
+    <select id="pageInvolvedActivityList" resultType="com.yuqi.pojo.activity.QueryActivityInvolvedResp">
+        select ttp.id as id,tt.id as activeId,tt.name as activeIdName,tt.description as description ,tt.start_time as
+        startTime,tt.end_time as endTime,
+        tt.admin_id as adminId,td.id as departmentId,td.name as departmentName,ts.id as userId,ts.name as involvedName,
+        ttp.score as score
+        from tb_training_participation ttp
+        inner join tb_training tt on ttp.training_id = tt.id
+        inner join tb_staff ts on ttp.staff_id = ts.id
+        inner join tb_department td on td.id =ts.department_id
+        <where>
+            <if test="null != req.activeName  and '' != req.activeName">
+                and tt.name = #{req.activeName}
+            </if>
+            <if test="null != req.staffId">
+                and ts.id = #{req.staffId}
+            </if>
+            <if test="null != req.departmentId">
+                and td.id = #{req.departmentId}
+            </if>
+        </where>
+        limit #{req.currentPage},#{req.pageSize}
+    </select>
+
+    <select id="pageInvolvedActivityListCount" resultType="java.lang.Integer">
+        select count(1) from  (select ttp.id as id,tt.id as activeId,tt.name as activeIdName,tt.description as description ,tt.start_time as startTime,tt.end_time as endTime,
+        tt.admin_id as adminId,td.id as departmentId,td.name as departmentName,ts.id as userId,ts.name as involvedName,
+        ttp.score as score
+        from tb_training_participation ttp
+        inner join tb_training tt on ttp.training_id  = tt.id
+        inner join tb_staff ts on ttp.staff_id = ts.id
+        inner join tb_department td  on td.id =ts.department_id
+        <where>
+            <if test="null != req.activeName and '' != req.activeName">
+                and tt.name = #{req.activeName}
+            </if>
+            <if test="null != req.staffId">
+                and ts.id = #{req.staffId}
+            </if>
+            <if test="null != req.departmentId">
+                and td.id = #{req.departmentId}
+            </if>
+        </where>
+        )  as tts
+    </select>
+
+    <update id="updateScoreById">
+        update tb_training_participation
+        set score=#{req.score}
+        where id = #{req.id}
+    </update>
 
 </mapper>

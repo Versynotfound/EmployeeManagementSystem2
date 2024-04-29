@@ -1,8 +1,9 @@
 package com.yuqi.service;
 
-import com.yuqi.pojo.*;
+import com.yuqi.pojo.CheckoutLoginInfo;
+import com.yuqi.pojo.PageBean;
 import com.yuqi.pojo.User;
-import com.yuqi.pojo.User;
+import com.yuqi.pojo.user.CreateUserReq;
 
 /**
  * UserService接口，定义了用户服务层的相关操作方法。
@@ -11,9 +12,9 @@ import com.yuqi.pojo.User;
 public interface UserService {
     /**
      * 添加
-     * @param user 用户
+     * @param
      */
-    void add(User user);
+    void add(CreateUserReq createUserReq) throws Exception;
 
     /**
      * 修改
@@ -52,8 +53,9 @@ public interface UserService {
     /**
      * 登录
      * @param username 用户名
-     * @param password 密码
      * @return 用户
      */
-    User login(String username, String password);
+    CheckoutLoginInfo login(String username);
+
+    int selectCountByLoginName(String loginName);
 }

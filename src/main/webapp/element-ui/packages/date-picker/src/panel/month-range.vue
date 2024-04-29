@@ -78,20 +78,14 @@
 </template>
 
 <script type="text/babel">
-  import {
-    isDate,
-    modifyWithTimeString,
-    prevYear,
-    nextYear,
-    nextMonth
-  } from 'element-ui/src/utils/date-util';
-  import Clickoutside from 'element-ui/src/utils/clickoutside';
-  import Locale from 'element-ui/src/mixins/locale';
-  import MonthTable from '../basic/month-table';
-  import ElInput from 'element-ui/packages/input';
-  import ElButton from 'element-ui/packages/button';
+import {isDate, modifyWithTimeString, nextMonth, nextYear, prevYear} from 'element-ui/src/utils/date-util';
+import Clickoutside from 'element-ui/src/utils/clickoutside';
+import Locale from 'element-ui/src/mixins/locale';
+import MonthTable from '../basic/month-table';
+import ElInput from 'element-ui/packages/input';
+import ElButton from 'element-ui/packages/button';
 
-  const calcDefaultValue = (defaultValue) => {
+const calcDefaultValue = (defaultValue) => {
     if (Array.isArray(defaultValue)) {
       return [new Date(defaultValue[0]), new Date(defaultValue[1])];
     } else if (defaultValue) {

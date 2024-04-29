@@ -1,8 +1,6 @@
 package com.yuqi.mapper;
 
 import com.yuqi.pojo.Announcement;
-import com.yuqi.pojo.Announcement;
-import com.yuqi.pojo.Announcement;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;

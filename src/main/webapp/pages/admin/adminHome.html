@@ -78,30 +78,30 @@
 
 <div id="app">
     <el-container>
-            <el-dialog
-                    title="修改密码"
-                    :visible.sync="changePasswordDialogVisible"
-                    width="30%">
-                <el-form :rules="formRules" ref="updatePassword" :model="updatePassword" label-width="80px" status-icon>
-                    <el-form-item label="原密码" prop="password" class="passwordItem">
-                        <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
-                    </el-form-item>
-                    <el-form-item label="新密码" prop="newPassword">
-                        <el-input type="password" v-model="updatePassword.newPassword"
-                                  placeholder="请输入新密码"></el-input>
-                    </el-form-item>
-                    <el-form-item label="确认密码" prop="confirmPassword">
-                        <el-input type="password" v-model="updatePassword.confirmPassword"
-                                  placeholder="请再次输入新密码"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="submitForm('updatePassword')">确认</el-button>
-                        <el-button @click="changePasswordDialogVisible = false">取消</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-dialog>
+        <el-dialog
+                title="修改密码"
+                :visible.sync="changePasswordDialogVisible"
+                width="30%">
+            <el-form :rules="formRules" ref="updatePassword" :model="updatePassword" label-width="80px" status-icon>
+                <el-form-item label="原密码" prop="password" class="passwordItem">
+                    <el-input type="password" v-model="updatePassword.password" placeholder="请输入原密码"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="newPassword">
+                    <el-input type="password" v-model="updatePassword.newPassword"
+                              placeholder="请输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword">
+                    <el-input type="password" v-model="updatePassword.confirmPassword"
+                              placeholder="请再次输入新密码"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('updatePassword')">确认</el-button>
+                    <el-button @click="changePasswordDialogVisible = false">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
 
-            <el-header>
+        <el-header>
             <div style="display: flex; justify-content: space-between;">
                 <div>
                     <h1 style="margin-top: 0; color: #202434; font-size: 30px;">人力资源管理系统</h1>
@@ -115,7 +115,7 @@
                                 <div class="avatar-info">
                                     <el-avatar :size="40" :src="avatar" :class="['avatar-info']"
                                                icon="el-icon-user-solid"></el-avatar>
-                                    <span class="username">{{username}}</span>
+                                    <span class="username">{{userInfo.username}}</span>
                                 </div>
                             </div>
                         </div>
@@ -142,6 +142,7 @@
                             <el-menu-item index="2-3" @click="goToAttendanceManager">考勤管理</el-menu-item>
                             <el-menu-item index="2-4" @click="goToApplicationManager">审批管理</el-menu-item>
                             <el-menu-item index="2-5" @click="goToTrainingManager">培训管理</el-menu-item>
+                            <el-menu-item index="2-6" @click="goToTrainingParticManager">培训参与记录</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                     <el-submenu index="3">
@@ -158,7 +159,7 @@
 
             <el-main>
                 <div class="box">
-                    <h1>管理员</h1>{{username}}<h1>欢迎使用员工管理系统!</h1>
+                    <h1>管理员</h1>{{userInfo.name}}<h1>欢迎使用员工管理系统!</h1>
                 </div>
 
             </el-main>
@@ -199,7 +200,7 @@
                         {required: true, validator: checkPassword, trigger: 'blur'}
                     ],
                 },
-                username: '',
+                userInfo: {},
                 avatar: '',
                 password: '',
             }
@@ -295,7 +296,9 @@
             getUsername() {
                 axios.get('http://localhost:8080/EmployeeManagementSystem2/user/getUsername')
                     .then(response => {
-                        this.username = response.data;
+                        if (response.data.code === '200') {
+                            this.userInfo = response.data.data;
+                        }
                     })
             },
             getPassword() {
@@ -330,6 +333,9 @@
             },
             goToTrainingManager() {
                 window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingManager.html"
+            },
+            goToTrainingParticManager() {
+                window.location.href = "http://localhost:8080/EmployeeManagementSystem2/pages/admin/trainingParticManager.html"
             }
         }
     })

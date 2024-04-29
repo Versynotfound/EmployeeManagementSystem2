@@ -1,9 +1,11 @@
 package com.yuqi.service;
 
 import com.yuqi.pojo.PageBean;
+import com.yuqi.pojo.QueryStaffInvolvedActivity;
 import com.yuqi.pojo.TrainingParticipation;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
+import com.yuqi.pojo.activity.ActivityScoreReq;
+import com.yuqi.pojo.activity.QueryActivityInvolvedReq;
+import com.yuqi.pojo.activity.QueryActivityInvolvedResp;
 
 import java.util.List;
 
@@ -25,4 +27,33 @@ public interface TrainingParticService {
      * @return PageBean对象
      */
     PageBean<TrainingParticipation> selectByStaffId(int currentPage, int pageSize, int id);
+
+
+    /**
+     * 获取当前登录用户已参与的活动数据
+     * @param queryStaffInvolvedActivity
+     * @return
+     */
+    List<TrainingParticipation> queryStaffInvolvedActivity(QueryStaffInvolvedActivity queryStaffInvolvedActivity);
+
+
+    /**
+     * 根据用户ID查询用户参与活动记录
+     * @param staffId
+     * @return
+     */
+    int selectCountById(Integer staffId,Integer activeId);
+
+    /**
+     * 分页查询参与记录
+     * @param queryActivityInvolvedReq
+     * @return
+     */
+    PageBean<QueryActivityInvolvedResp> pageInvolvedActivityList(QueryActivityInvolvedReq queryActivityInvolvedReq);
+
+    /**
+     * 参与活动得分
+     * @param activityScoreReq
+     */
+    void updateScoreById(ActivityScoreReq activityScoreReq);
 }

@@ -1,7 +1,6 @@
 
 package com.yuqi.utils;
 
-import lombok.Getter;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -14,7 +13,6 @@ import java.io.InputStream;
  * @author yuqi
  */
 public class SqlSessionFactoryUtil {
-    @Getter
     private static SqlSessionFactory sqlSessionFactory;
 
     static {
@@ -28,4 +26,7 @@ public class SqlSessionFactoryUtil {
         }
     }
 
+    public static SqlSessionFactory getSqlSessionFactory() {
+        return sqlSessionFactory;
+    }
 }
